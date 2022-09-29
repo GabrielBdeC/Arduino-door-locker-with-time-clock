@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Debug NestServer",
+      "request": "launch",
+      "command": "npm run start:dev",
+      "cwd": "${workspaceFolder}/server"
+    }
+  ]
+}
