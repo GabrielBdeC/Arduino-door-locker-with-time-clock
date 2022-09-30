@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HealthCheck } from '../entity/health-check.entity';
@@ -11,6 +11,10 @@ export class HealthCheckService {
   ) {}
 
   public async test(): Promise<HealthCheck[]> {
-    return this.pointRepository.find();
+    try {
+      return this.pointRepository.find();
+    } catch (error) {
+      throw new HttpException('Database Error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
