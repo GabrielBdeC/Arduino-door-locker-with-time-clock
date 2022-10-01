@@ -30,7 +30,7 @@ export class ApplicationUser extends CommonEntity {
     unique: true,
     nullable: false,
   })
-  public username: string;
+  public login: string;
 
   @Column({
     name: 'password',

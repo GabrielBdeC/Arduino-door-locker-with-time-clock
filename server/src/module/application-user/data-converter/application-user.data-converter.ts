@@ -12,8 +12,7 @@ export class ApplicationUserDataConverter {
     const dto: ApplicationUserDto = new ApplicationUserDto();
     dto.uuid = this.uuidPipe.format(entity.uuid);
     dto.createdAt = entity.createdAt.toISOString();
-    dto.username = entity.username;
-    dto.password = entity.password;
+    dto.login = entity.login;
     dto.applicationUserType = entity.applicationUserType.toString();
     return dto;
   }
@@ -25,8 +24,8 @@ export class ApplicationUserDataConverter {
     if ('createdAt' in dto) {
       entity.createdAt = new Date(dto.createdAt);
     }
-    if ('username' in dto) {
-      entity.username = dto.username;
+    if ('login' in dto) {
+      entity.login = dto.login;
     }
     if ('password' in dto) {
       entity.password = dto.password;

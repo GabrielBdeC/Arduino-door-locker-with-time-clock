@@ -16,7 +16,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       database: this.configService.get<string>('TYPEORM_DATABASE'),
       entities: [
         `${__dirname}/../../module/*/entity/*.entity.js`,
-        `${__dirname}/../../shared/*/entity/*.entity.js`,
+        `${__dirname}/../../common/entity/*.entity.js`,
       ],
       synchronize: false,
     };

@@ -25,6 +25,12 @@ export class ApplicationUserService {
     return paginate<ApplicationUser>(query, options);
   }
 
+  public async getByLogin(alogin: string): Promise<ApplicationUser> {
+    return this.applicationUserRepository.findOneByOrFail({
+      login: alogin,
+    });
+  }
+
   public async getOne(
     applicationUser: ApplicationUser,
   ): Promise<ApplicationUser> {

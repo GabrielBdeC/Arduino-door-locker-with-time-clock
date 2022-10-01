@@ -46,12 +46,23 @@ export class ApplicationUserController {
 
   @Get('/:uuid')
   public async getOne(
-    @Param('uuid') uuid: string,
+    @Param('uuid', new UUIDPipe()) uuid: string,
   ): Promise<ApplicationUserDto> {
     const applicationUserSearch: ApplicationUser = new ApplicationUser();
     applicationUserSearch.uuid = uuid;
     return this.applicationUserService
       .getOne(applicationUserSearch)
+      .then((applicationUser: ApplicationUser) =>
+        this.applicationUserDataConverter.toDto(applicationUser),
+      );
+  }
+
+  @Get('/login/:login')
+  public async getOneByLogin(
+    @Param('login') login: string,
+  ): Promise<ApplicationUserDto> {
+    return this.applicationUserService
+      .getByLogin(login)
       .then((applicationUser: ApplicationUser) =>
         this.applicationUserDataConverter.toDto(applicationUser),
       );

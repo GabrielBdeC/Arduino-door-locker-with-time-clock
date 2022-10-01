@@ -10,5 +10,10 @@ import { ApplicationUserService } from './service/application-user.service';
   controllers: [ApplicationUserController],
   imports: [TypeOrmModule.forFeature([ApplicationUser]), CommonModule],
   providers: [ApplicationUserService, ApplicationUserDataConverter],
+  exports: [
+    TypeOrmModule,
+    ApplicationUserService,
+    ApplicationUserDataConverter,
+  ],
 })
 export class ApplicationUserModule {}
