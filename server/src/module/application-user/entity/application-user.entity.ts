@@ -56,7 +56,6 @@ export class ApplicationUser extends CommonEntity {
 
   @BeforeInsert()
   async hashPassword() {
-    console.log(await argon2.hash(this.password));
     this.password = await argon2.hash(this.password);
   }
 }

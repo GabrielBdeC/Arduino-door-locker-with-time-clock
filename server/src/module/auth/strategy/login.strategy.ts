@@ -3,30 +3,33 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { ApplicationUser } from '../../application-user/entity/application-user.entity';
 import { LoginDataConverter } from '../data-converter/login.data-converter';
-import { LoginModel } from '../model/login.model';
+import { UserDataConverter } from '../data-converter/user.data-converter';
+import { Login } from '../model/login.model';
+import { User } from '../model/user.model';
 import { AuthService } from '../service/auth.service';
 
 @Injectable()
 export class LoginStrategy extends PassportStrategy(Strategy, 'login') {
   constructor(
-    private loginDataConverter: LoginDataConverter,
     private authService: AuthService,
+    private loginDataConverter: LoginDataConverter,
+    private userDataConverter: UserDataConverter,
   ) {
     super({ usernameField: 'login' });
   }
 
-  public async validate(login: string, password: string): Promise<any> {
-    const loginModel: LoginModel = this.loginDataConverter.toModel({
+  public async validate(login: string, password: string): Promise<User> {
+    const loginModel: Login = this.loginDataConverter.toModel({
       login: login,
       password: password,
     });
-    this.authService
+    return this.authService
       .validateUser(loginModel)
       .then((applicationUser: ApplicationUser) => {
         if (!applicationUser) {
           throw new UnauthorizedException();
         }
-        return applicationUser;
+        return this.userDataConverter.toUser(applicationUser);
       });
   }
 }

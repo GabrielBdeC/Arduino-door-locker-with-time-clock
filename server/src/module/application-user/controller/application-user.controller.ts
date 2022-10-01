@@ -9,8 +9,10 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { JwtAuthGuard } from '../../auth/guard/jwt.guard';
 import { UUIDPipe } from '../../../common/pipe/uuid.pipe';
 import { ApplicationUserDataConverter } from '../data-converter/application-user.data-converter';
 import { ApplicationUserDto } from '../dto/application-user.dto';
@@ -25,6 +27,7 @@ export class ApplicationUserController {
   ) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   public async getAll(
     @Query('numberPage', new DefaultValuePipe(1), ParseIntPipe)
     page = 1,
@@ -52,17 +55,6 @@ export class ApplicationUserController {
     applicationUserSearch.uuid = uuid;
     return this.applicationUserService
       .getOne(applicationUserSearch)
-      .then((applicationUser: ApplicationUser) =>
-        this.applicationUserDataConverter.toDto(applicationUser),
-      );
-  }
-
-  @Get('/login/:login')
-  public async getOneByLogin(
-    @Param('login') login: string,
-  ): Promise<ApplicationUserDto> {
-    return this.applicationUserService
-      .getByLogin(login)
       .then((applicationUser: ApplicationUser) =>
         this.applicationUserDataConverter.toDto(applicationUser),
       );

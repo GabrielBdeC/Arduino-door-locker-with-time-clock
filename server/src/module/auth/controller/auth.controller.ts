@@ -1,43 +1,21 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Post,
-  UnauthorizedException,
-  Headers,
-  UseGuards,
-} from '@nestjs/common';
-import { LoginDto } from '../dto/login.dto';
+import { Request, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../guard/jwt.guard';
 import { LoginAuthGuard } from '../guard/login.guard';
-
-const jwt =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjNhYWFhYTQ1NnNkc2FkYXNkYXNkYXNkYXNkYXNkYXNkNzg5MCIsIm5hbWUiOiJKb2hhc2Rhc2Rhc2Rhc2Rhc2Rhc3Z2dnZ2dnZ2dm4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.OARZIdBaLnYR5qKB1xR3b8AmqJ8fZsMRYiy6zSZEgcs';
+import { AuthService } from '../service/auth.service';
 
 @Controller('v1/auth')
 export class AuthController {
+  constructor(private authService: AuthService) {}
+
   @UseGuards(LoginAuthGuard)
   @Post('/login')
-  public login(@Body() loginDto: LoginDto): string {
-    if (loginDto.login == 'arduino' && loginDto.password == 'arduino') {
-      return jwt;
-    } else {
-      throw new UnauthorizedException();
-    }
+  public async login(@Request() req): Promise<string> {
+    return this.authService.login(req.user);
   }
 
-  @Post('/logout')
-  @HttpCode(204)
-  public logout() {
-    return;
-  }
-
+  @UseGuards(JwtAuthGuard)
   @Get('/protected_check')
-  public check(@Headers() headers): string {
-    if (headers['authorization'] == `Bearer ${jwt}`) {
-      return 'OK';
-    } else {
-      throw new UnauthorizedException();
-    }
+  public check(): string {
+    return 'OK';
   }
 }
