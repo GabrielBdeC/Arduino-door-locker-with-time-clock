@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `application_user` (
   `application_user_uuid` VARCHAR(32) NOT NULL COMMENT 'Use in DTO',
   `login` VARCHAR(84) NOT NULL UNIQUE,
   `password` VARCHAR(128) NOT NULL COMMENT 'ARGON2',
-  `application_user_type` INT NOT NULL COMMENT 'ENUM access_timer_clock: LOCKER, USER, ADMIN',
+  `application_user_type` ENUM('LOCKER', 'USER', 'ADMIN') DEFAULT 'USER',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `changed_at` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` TIMESTAMP NULL DEFAULT NULL,
