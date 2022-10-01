@@ -5,6 +5,7 @@ import { HealthCheckModule } from './module/health-check/health-check.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmConfigService } from './core/services/typeorm-config.service';
+import { ApplicationUserModule } from './module/application-user/application-user.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TypeOrmConfigService } from './core/services/typeorm-config.service';
       inject: [TypeOrmConfigService],
     }),
     AuthModule,
+    ApplicationUserModule,
     DoorLockerUserModule,
     HealthCheckModule,
   ],
