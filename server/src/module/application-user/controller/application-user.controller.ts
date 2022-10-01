@@ -11,6 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { UUIDPipe } from '../../../common/pipe/uuid.pipe';
 import { ApplicationUserDataConverter } from '../data-converter/application-user.data-converter';
 import { ApplicationUserDto } from '../dto/application-user.dto';
 import { ApplicationUser } from '../entity/application-user.entity';
@@ -71,7 +72,7 @@ export class ApplicationUserController {
 
   @Put('/:uuid')
   public async update(
-    @Param('uuid') uuid: string,
+    @Param('uuid', new UUIDPipe()) uuid: string,
     @Body() applicationUserDto: ApplicationUserDto,
   ): Promise<ApplicationUserDto> {
     const applicationUser: ApplicationUser =
@@ -86,7 +87,7 @@ export class ApplicationUserController {
 
   @Delete('/:uuid')
   public async remove(
-    @Param('uuid') uuid: string,
+    @Param('uuid', new UUIDPipe()) uuid: string,
     @Body() applicationUserDto: ApplicationUserDto,
   ) {
     const applicationUser: ApplicationUser =
