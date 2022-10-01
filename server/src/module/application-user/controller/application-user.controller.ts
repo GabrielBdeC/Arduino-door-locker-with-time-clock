@@ -1,12 +1,16 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
+import { Pagination } from 'nestjs-typeorm-paginate';
 import { ApplicationUserDataConverter } from '../data-converter/application-user.data-converter';
 import { ApplicationUserDto } from '../dto/application-user.dto';
 import { ApplicationUser } from '../entity/application-user.entity';
@@ -20,14 +24,23 @@ export class ApplicationUserController {
   ) {}
 
   @Get()
-  public async getAll(): Promise<ApplicationUserDto[]> {
-    return this.applicationUserService
-      .getAll()
-      .then((applicationUserList: ApplicationUser[]) =>
-        applicationUserList.map((applicationUser: ApplicationUser) =>
-          this.applicationUserDataConverter.toDto(applicationUser),
+  public async getAll(
+    @Query('numberPage', new DefaultValuePipe(1), ParseIntPipe)
+    page = 1,
+    @Query('pageItems', new DefaultValuePipe(30), ParseIntPipe)
+    limit = 30,
+  ): Promise<Pagination<ApplicationUserDto>> {
+    limit = limit > 100 ? 100 : limit;
+    return this.applicationUserService.getAll({ page, limit }).then(
+      (applicationUserList: Pagination<ApplicationUser>) =>
+        new Pagination<ApplicationUserDto>(
+          applicationUserList.items.map((applicationUser: ApplicationUser) =>
+            this.applicationUserDataConverter.toDto(applicationUser),
+          ),
+          applicationUserList.meta,
+          applicationUserList.links,
         ),
-      );
+    );
   }
 
   @Get('/:uuid')

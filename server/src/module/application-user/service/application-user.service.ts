@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 import { Repository } from 'typeorm';
 import { ApplicationUser } from '../entity/application-user.entity';
 
@@ -10,8 +15,14 @@ export class ApplicationUserService {
     private applicationUserRepository: Repository<ApplicationUser>,
   ) {}
 
-  public async getAll(): Promise<ApplicationUser[]> {
-    return this.applicationUserRepository.find();
+  public async getAll(
+    options: IPaginationOptions,
+  ): Promise<Pagination<ApplicationUser>> {
+    const query = this.applicationUserRepository
+      .createQueryBuilder('applicationUser')
+      .select()
+      .orderBy('applicationUser.createdAt', 'ASC');
+    return paginate<ApplicationUser>(query, options);
   }
 
   public async getOne(
