@@ -13,12 +13,15 @@ import {
 } from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { JwtAuthGuard } from '../../auth/guard/jwt.guard';
-import { UUIDPipe } from '../../../common/pipe/uuid.pipe';
 import { ApplicationUserDataConverter } from '../data-converter/application-user.data-converter';
 import { ApplicationUserDto } from '../dto/application-user.dto';
 import { ApplicationUser } from '../entity/application-user.entity';
 import { ApplicationUserService } from '../service/application-user.service';
+import { ApplicationUserAbilities } from '../decorator/application-user-abilities.decorator';
+import { ApplicationUserAction } from '../type/application-user.action';
+import { ApplicationUserGuard } from '../guard/application-user.guard';
 
+@UseGuards(JwtAuthGuard, ApplicationUserGuard)
 @Controller('v1/application_user')
 export class ApplicationUserController {
   constructor(
@@ -27,7 +30,7 @@ export class ApplicationUserController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @ApplicationUserAbilities(ApplicationUserAction.GET)
   public async getAll(
     @Query('numberPage', new DefaultValuePipe(1), ParseIntPipe)
     page = 1,
@@ -48,8 +51,9 @@ export class ApplicationUserController {
   }
 
   @Get('/:uuid')
+  @ApplicationUserAbilities(ApplicationUserAction.GET)
   public async getOne(
-    @Param('uuid', new UUIDPipe()) uuid: string,
+    @Param('uuid') uuid: string,
   ): Promise<ApplicationUserDto> {
     const applicationUserSearch: ApplicationUser = new ApplicationUser();
     applicationUserSearch.uuid = uuid;
@@ -61,6 +65,7 @@ export class ApplicationUserController {
   }
 
   @Post()
+  @ApplicationUserAbilities(ApplicationUserAction.CREATE)
   public async create(
     @Body() applicationUserDto: ApplicationUserDto,
   ): Promise<ApplicationUserDto> {
@@ -74,8 +79,9 @@ export class ApplicationUserController {
   }
 
   @Put('/:uuid')
+  @ApplicationUserAbilities(ApplicationUserAction.UPDATE)
   public async update(
-    @Param('uuid', new UUIDPipe()) uuid: string,
+    @Param('uuid') uuid: string,
     @Body() applicationUserDto: ApplicationUserDto,
   ): Promise<ApplicationUserDto> {
     const applicationUser: ApplicationUser =
@@ -89,8 +95,9 @@ export class ApplicationUserController {
   }
 
   @Delete('/:uuid')
+  @ApplicationUserAbilities(ApplicationUserAction.REMOVE)
   public async remove(
-    @Param('uuid', new UUIDPipe()) uuid: string,
+    @Param('uuid') uuid: string,
     @Body() applicationUserDto: ApplicationUserDto,
   ) {
     const applicationUser: ApplicationUser =
