@@ -14,12 +14,6 @@ import { ApplicationUserType } from '../type/application-user.type';
 type Subjects = InferSubjects<typeof ApplicationUser>;
 type AppAbility = Ability<[ApplicationUserAction, Subjects]>;
 
-/*enum ApplicationUserType { //RETIRAR ENUM CIRCULAR AQUI
-  LOCKER = 'LOCKER',
-  USER = 'USER',
-  ADMIN = 'ADMIN',
-}*/
-
 @Injectable()
 export class ApplicationUserAbilityFactory {
   public defineAbility(user: User) {
