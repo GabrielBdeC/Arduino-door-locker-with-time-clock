@@ -20,6 +20,7 @@ import { ApplicationUserService } from '../service/application-user.service';
 import { ApplicationUserAbilities } from '../decorator/application-user-abilities.decorator';
 import { ApplicationUserAction } from '../type/application-user.action';
 import { ApplicationUserGuard } from '../guard/application-user.guard';
+import { UUIDPipe } from '../../../common/pipe/uuid.pipe';
 
 @UseGuards(JwtAuthGuard, ApplicationUserGuard)
 @Controller('v1/application_user')
@@ -53,7 +54,7 @@ export class ApplicationUserController {
   @Get('/:uuid')
   @ApplicationUserAbilities(ApplicationUserAction.GET)
   public async getOne(
-    @Param('uuid') uuid: string,
+    @Param('uuid', new UUIDPipe()) uuid: string,
   ): Promise<ApplicationUserDto> {
     const applicationUserSearch: ApplicationUser = new ApplicationUser();
     applicationUserSearch.uuid = uuid;
@@ -81,7 +82,7 @@ export class ApplicationUserController {
   @Put('/:uuid')
   @ApplicationUserAbilities(ApplicationUserAction.UPDATE)
   public async update(
-    @Param('uuid') uuid: string,
+    @Param('uuid', new UUIDPipe()) uuid: string,
     @Body() applicationUserDto: ApplicationUserDto,
   ): Promise<ApplicationUserDto> {
     const applicationUser: ApplicationUser =
