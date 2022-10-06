@@ -1,5 +1,5 @@
 import {
-  PureAbility,
+  Ability,
   AbilityBuilder,
   AbilityClass,
   ExtractSubjectType,
@@ -12,22 +12,22 @@ import { ApplicationUser } from '../entity/application-user.entity';
 import { ApplicationUserType } from '../type/application-user.type';
 
 type Subjects = InferSubjects<typeof ApplicationUser>;
-type AppAbility = PureAbility<[ApplicationUserAction, Subjects]>;
+type AppAbility = Ability<[ApplicationUserAction, Subjects]>;
 
 @Injectable()
 export class ApplicationUserAbilityFactory {
   public defineAbility(user: User) {
     const { can, build } = new AbilityBuilder(
-      PureAbility as AbilityClass<AppAbility>,
+      Ability as AbilityClass<AppAbility>,
     );
     if (user.applicationUserType == ApplicationUserType.ADMIN) {
       can(ApplicationUserAction.MANAGE, ApplicationUser);
     } else if (user.applicationUserType == ApplicationUserType.USER) {
       can(ApplicationUserAction.GET, ApplicationUser, {
-        uuid: { $eq: user.uuid },
+        uuid: user.uuid,
       });
       can(ApplicationUserAction.UPDATE, ApplicationUser, {
-        uuid: { $eq: user.uuid },
+        uuid: user.uuid,
       });
     }
     return build({
