@@ -6,6 +6,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmConfigService } from './core/services/typeorm-config.service';
 import { ApplicationUserModule } from './module/application-user/application-user.module';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './module/auth/guard/jwt.guard';
+import { GlobalExceptionFilter } from './core/filter/global.filter';
 
 @Module({
   imports: [
@@ -18,6 +21,16 @@ import { ApplicationUserModule } from './module/application-user/application-use
     ApplicationUserModule,
     DoorLockerUserModule,
     HealthCheckModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
   ],
 })
 export class AppModule {}

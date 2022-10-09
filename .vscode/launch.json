@@ -5,7 +5,7 @@
       "type": "node-terminal",
       "name": "Debug NestServer",
       "request": "launch",
-      "command": "npm run start:dev",
+      "command": "yarn run start:dev",
       "cwd": "${workspaceFolder}/server"
     }
   ]

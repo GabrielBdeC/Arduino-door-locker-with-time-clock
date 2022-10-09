@@ -10,6 +10,7 @@ import { UserDataConverter } from './data-converter/user.data-converter';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
 import { JWTConfigService } from '../../core/services/jwt-config.service';
+import { CommonModule } from '../../common/common.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { JWTConfigService } from '../../core/services/jwt-config.service';
       imports: [ConfigModule],
       useClass: JWTConfigService,
     }),
+    CommonModule,
   ],
   providers: [
     LoginStrategy,

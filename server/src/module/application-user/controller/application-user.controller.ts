@@ -12,7 +12,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { JwtAuthGuard } from '../../auth/guard/jwt.guard';
 import { ApplicationUserDataConverter } from '../data-converter/application-user.data-converter';
 import { ApplicationUserDto } from '../dto/application-user.dto';
 import { ApplicationUser } from '../entity/application-user.entity';
@@ -22,7 +21,7 @@ import { ApplicationUserAction } from '../type/application-user.action';
 import { ApplicationUserGuard } from '../guard/application-user.guard';
 import { UUIDPipe } from '../../../common/pipe/uuid.pipe';
 
-@UseGuards(JwtAuthGuard, ApplicationUserGuard)
+@UseGuards(ApplicationUserGuard)
 @Controller('v1/application_user')
 export class ApplicationUserController {
   constructor(
