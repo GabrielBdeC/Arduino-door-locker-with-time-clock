@@ -12,7 +12,7 @@
 /server/lerna-debug.log*
 
 # Env
-**/.env
+/**/.env
 
 # OS
 /server/.DS_Store
