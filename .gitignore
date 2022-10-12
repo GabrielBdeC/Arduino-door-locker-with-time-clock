@@ -11,6 +11,9 @@
 /server/yarn-error.log*
 /server/lerna-debug.log*
 
+# Env
+**/.env
+
 # OS
 /server/.DS_Store
 
