@@ -1,4 +1,4 @@
-import * as rawbody from 'raw-body';
+import rawbody from 'raw-body';
 import {
   Body,
   Controller,
