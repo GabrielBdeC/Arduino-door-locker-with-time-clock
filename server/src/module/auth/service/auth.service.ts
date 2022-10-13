@@ -5,6 +5,8 @@ import { Login } from '../model/login.model';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../model/user.model';
 import * as argon2 from 'argon2';
+import { validateOrReject } from 'class-validator';
+import { validationOptionsDefault } from '../../../common/constant/validation-options-default.constant';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +16,7 @@ export class AuthService {
   ) {}
 
   public async validateUser(login: Login): Promise<ApplicationUser> {
+    await validateOrReject(login, validationOptionsDefault);
     return this.applicationUserService
       .getByLogin(login.login)
       .then((applicationUser: ApplicationUser) =>

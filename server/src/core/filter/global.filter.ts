@@ -83,14 +83,25 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       exception.every((el: any) => el instanceof ValidationError)
     ) {
       const errors = [];
-      exception.forEach((validationError: ValidationError) => {
-        Object.values(validationError.constraints).forEach((value: string) => {
-          errors.push({
-            reason: validationError.property,
-            message: value,
-          });
+      const recursiveClassValidator = (
+        validationErrorList: ValidationError[],
+      ) => {
+        validationErrorList.forEach((validationError: ValidationError) => {
+          if (validationError.constraints) {
+            Object.values(validationError.constraints).forEach(
+              (value: string) => {
+                return errors.push({
+                  reason: validationError.property,
+                  message: value,
+                });
+              },
+            );
+          } else {
+            recursiveClassValidator(validationError.children);
+          }
         });
-      });
+      };
+      recursiveClassValidator(exception);
       return {
         status: HttpStatus.BAD_REQUEST,
         errors: errors,
