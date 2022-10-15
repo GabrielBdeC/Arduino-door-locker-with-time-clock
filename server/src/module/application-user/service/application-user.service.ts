@@ -45,12 +45,22 @@ export class ApplicationUserService {
 
   public async create(
     applicationUser: ApplicationUser,
+    user: User,
   ): Promise<ApplicationUser> {
+    const applicationUserCreator: ApplicationUser = new ApplicationUser();
+    applicationUserCreator.id = user.id;
+    applicationUser.createdBy = applicationUserCreator;
     await validateOrReject(
       applicationUser,
       applicationUserValidationOptions[ApplicationUserAction.CREATE],
     );
-    return this.applicationUserRepository.save(applicationUser);
+    return this.applicationUserRepository
+      .createQueryBuilder()
+      .insert()
+      .values(applicationUser)
+      .returning('*')
+      .execute()
+      .then((el) => <ApplicationUser>el.generatedMaps[0]);
   }
 
   public async update(
@@ -67,20 +77,43 @@ export class ApplicationUserService {
         "You can't change own Application User Type",
       );
     }
+    const applicationUserChanger: ApplicationUser = new ApplicationUser();
+    applicationUserChanger.id = user.id;
+    applicationUser.changedBy = applicationUserChanger;
     await validateOrReject(
       applicationUser,
       applicationUserValidationOptions[ApplicationUserAction.UPDATE],
     );
-    return this.applicationUserRepository.save(applicationUser);
+    return this.applicationUserRepository
+      .createQueryBuilder()
+      .update(applicationUser)
+      .where('uuid = :uuid', { uuid: applicationUser.uuid })
+      .execute()
+      .then(() => {
+        return this.getOne(applicationUser);
+      });
   }
 
-  public async remove(
-    applicationUser: ApplicationUser,
-  ): Promise<ApplicationUser> {
+  public async remove(applicationUser: ApplicationUser, user: User) {
     await validateOrReject(
       applicationUser,
       applicationUserValidationOptions[ApplicationUserAction.REMOVE],
     );
-    return this.applicationUserRepository.softRemove(applicationUser);
+    const applicationUserDeleter: ApplicationUser = new ApplicationUser();
+    applicationUserDeleter.id = user.id;
+    return this.applicationUserRepository
+      .createQueryBuilder()
+      .update(ApplicationUser)
+      .set({ deletedBy: applicationUserDeleter })
+      .where('uuid = :uuid', { uuid: applicationUser.uuid })
+      .execute()
+      .then(() => {
+        this.applicationUserRepository
+          .createQueryBuilder()
+          .softDelete()
+          .from(ApplicationUser)
+          .where('uuid = :uuid', { uuid: applicationUser.uuid })
+          .execute();
+      });
   }
 }

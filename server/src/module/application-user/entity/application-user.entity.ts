@@ -1,23 +1,18 @@
 import { CommonEntity } from '../../../common/entity/common.entity';
 import {
   BeforeInsert,
+  BeforeSoftRemove,
   BeforeUpdate,
   Column,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { v4 as uuid4 } from 'uuid';
 import * as argon2 from 'argon2';
 import { ApplicationUserType } from '../type/application-user.type';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-  Length,
-  Matches,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString, Length, Matches } from 'class-validator';
 import { ApplicationUserAction } from '../type/application-user.action';
 import { IsDbUUIDv4 } from 'src/common/decorator/IsDbUUIDv4.decorator';
 
@@ -84,6 +79,18 @@ export class ApplicationUser extends CommonEntity {
   @IsEnum(ApplicationUserType)
   public applicationUserType: ApplicationUserType;
 
+  @OneToOne(() => ApplicationUser)
+  @JoinColumn({ name: `created_by` })
+  createdBy: ApplicationUser;
+
+  @OneToOne(() => ApplicationUser)
+  @JoinColumn({ name: `changed_by` })
+  changedBy: ApplicationUser;
+
+  @OneToOne(() => ApplicationUser)
+  @JoinColumn({ name: `deleted_by` })
+  deletedBy: ApplicationUser;
+
   @BeforeInsert()
   generateUuid() {
     this.uuid = uuid4().replace(/-/g, '').toUpperCase();
@@ -93,5 +100,23 @@ export class ApplicationUser extends CommonEntity {
   @BeforeUpdate()
   async hashPassword() {
     this.password = await argon2.hash(this.password);
+  }
+
+  @BeforeInsert()
+  public removePersonColumnsInInsert() {
+    delete this.changedBy;
+    delete this.deletedBy;
+  }
+
+  @BeforeUpdate()
+  public removePersonColumnsInUpdate() {
+    delete this.createdBy;
+    delete this.deletedBy;
+  }
+
+  @BeforeSoftRemove()
+  public removePersonColumnsInSoftRemove() {
+    delete this.createdBy;
+    delete this.changedBy;
   }
 }

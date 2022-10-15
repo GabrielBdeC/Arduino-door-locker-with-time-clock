@@ -4,6 +4,8 @@ import {
   DefaultValuePipe,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -69,11 +71,12 @@ export class ApplicationUserController {
   @ApplicationUserAbilities(ApplicationUserAction.CREATE)
   public async create(
     @Body() applicationUserDto: ApplicationUserDto,
+    @Req() req,
   ): Promise<ApplicationUserDto> {
     const applicationUser: ApplicationUser =
       this.applicationUserDataConverter.toEntity(applicationUserDto);
     return this.applicationUserService
-      .create(applicationUser)
+      .create(applicationUser, req.user)
       .then((applicationUser: ApplicationUser) =>
         this.applicationUserDataConverter.toDto(applicationUser),
       );
@@ -98,17 +101,15 @@ export class ApplicationUserController {
 
   @Delete('/:uuid')
   @ApplicationUserAbilities(ApplicationUserAction.REMOVE)
+  @HttpCode(HttpStatus.NO_CONTENT)
   public async remove(
     @Param('uuid') uuid: string,
     @Body() applicationUserDto: ApplicationUserDto,
+    @Req() req,
   ) {
     const applicationUser: ApplicationUser =
       this.applicationUserDataConverter.toEntity(applicationUserDto);
     applicationUser.uuid = uuid;
-    this.applicationUserService
-      .remove(applicationUser)
-      .then((applicationUser: ApplicationUser) =>
-        this.applicationUserDataConverter.toDto(applicationUser),
-      );
+    this.applicationUserService.remove(applicationUser, req.user);
   }
 }

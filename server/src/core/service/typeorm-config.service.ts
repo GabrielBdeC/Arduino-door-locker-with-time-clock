@@ -8,7 +8,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
-      type: this.configService.get<any>('TYPEORM_TYPE'),
+      type: 'mariadb',
       host: this.configService.get<string>('TYPEORM_HOST'),
       port: this.configService.get<number>('TYPEORM_PORT'),
       username: this.configService.get<string>('TYPEORM_USERNAME'),

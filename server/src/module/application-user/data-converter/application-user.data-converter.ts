@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { isValidDate } from 'src/common/util/date.util';
 import { UUIDPipe } from '../../../common/pipe/uuid.pipe';
 import { ApplicationUserDto } from '../dto/application-user.dto';
 import { ApplicationUser } from '../entity/application-user.entity';
@@ -16,21 +17,19 @@ export class ApplicationUserDataConverter {
     dto.applicationUserType = entity.applicationUserType.toString();
     return dto;
   }
+
   public toEntity(dto: ApplicationUserDto): ApplicationUser {
     const entity: ApplicationUser = new ApplicationUser();
-    if ('uuid' in dto) {
+    if (dto.uuid) {
       entity.uuid = this.uuidPipe.unformat(dto.uuid);
     }
-    if ('createdAt' in dto) {
-      entity.createdAt = new Date(dto.createdAt);
+    const tempCreatedAt = new Date(dto.createdAt);
+    if (isValidDate(tempCreatedAt)) {
+      entity.createdAt = tempCreatedAt;
     }
-    if ('login' in dto) {
-      entity.login = dto.login;
-    }
-    if ('password' in dto) {
-      entity.password = dto.password;
-    }
-    if ('applicationUserType' in dto) {
+    entity.login = dto.login;
+    entity.password = dto.password;
+    if (dto.applicationUserType) {
       entity.applicationUserType = ApplicationUserType[dto.applicationUserType];
     }
     return entity;
