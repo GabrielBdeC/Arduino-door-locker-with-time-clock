@@ -9,7 +9,15 @@ export class UUIDPipe implements PipeTransform {
     if (uuid.length !== 32) {
       throw new BadRequestException('Invalid UUID Length');
     }
-    return uuid.toUpperCase();
+    if (
+      uuid.match(
+        /^[0-9a-fA-F]{8}[0-9a-fA-F]{4}[0-9a-fA-F]{4}[0-9a-fA-F]{4}[0-9a-fA-F]{12}$/,
+      )
+    ) {
+      return uuid.toUpperCase();
+    } else {
+      throw new BadRequestException('Invalid UUID');
+    }
   }
 
   public unformat(uuid: string): string {

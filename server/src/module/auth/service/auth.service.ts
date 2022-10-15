@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../model/user.model';
 import * as argon2 from 'argon2';
 import { validateOrReject } from 'class-validator';
-import { validationOptionsDefault } from '../../../common/constant/validation-options-default.constant';
+import { commonValidationOptions } from '../../../common/constant/common-validation-options.constant';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +16,7 @@ export class AuthService {
   ) {}
 
   public async validateUser(login: Login): Promise<ApplicationUser> {
-    await validateOrReject(login, validationOptionsDefault);
+    await validateOrReject(login, commonValidationOptions);
     return this.applicationUserService
       .getByLogin(login.login)
       .then((applicationUser: ApplicationUser) =>

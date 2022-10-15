@@ -1,4 +1,6 @@
-export const validationOptionsDefault = {
+import { ValidatorOptions } from 'class-validator';
+
+export const commonValidationOptions: ValidatorOptions = {
   enableDebugMessages: false,
   skipUndefinedProperties: false,
   skipNullProperties: false,
@@ -8,4 +10,4 @@ export const validationOptionsDefault = {
     value: false,
   },
   forbidUnknownValues: true,
-};
+} as const;

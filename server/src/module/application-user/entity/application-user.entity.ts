@@ -1,8 +1,25 @@
 import { CommonEntity } from '../../../common/entity/common.entity';
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { v4 as uuid4 } from 'uuid';
 import * as argon2 from 'argon2';
 import { ApplicationUserType } from '../type/application-user.type';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Matches,
+} from 'class-validator';
+import { ApplicationUserAction } from '../type/application-user.action';
+import { IsDbUUIDv4 } from 'src/common/decorator/IsDbUUIDv4.decorator';
 
 @Entity({
   name: 'application_user',
@@ -21,6 +38,9 @@ export class ApplicationUser extends CommonEntity {
     unique: true,
     comment: 'used in DTO',
   })
+  @IsDbUUIDv4({
+    groups: [ApplicationUserAction.UPDATE, ApplicationUserAction.REMOVE],
+  })
   public uuid: string;
 
   @Column({
@@ -30,6 +50,11 @@ export class ApplicationUser extends CommonEntity {
     unique: true,
     nullable: false,
   })
+  @IsString({
+    message: 'Login value must be a string.',
+    groups: [ApplicationUserAction.CREATE],
+  })
+  @Length(4, 84, { groups: [ApplicationUserAction.CREATE] })
   public login: string;
 
   @Column({
@@ -39,6 +64,14 @@ export class ApplicationUser extends CommonEntity {
     nullable: false,
     comment: 'ARGON2',
   })
+  @IsOptional({
+    groups: [ApplicationUserAction.UPDATE, ApplicationUserAction.REMOVE],
+  })
+  @IsString({ message: 'Password value must be a string.' })
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message: 'Password too weak.',
+  })
+  @Length(8, 128)
   public password: string;
 
   @Column({
@@ -47,6 +80,8 @@ export class ApplicationUser extends CommonEntity {
     enum: ApplicationUserType,
     default: ApplicationUserType.USER,
   })
+  @IsOptional()
+  @IsEnum(ApplicationUserType)
   public applicationUserType: ApplicationUserType;
 
   @BeforeInsert()
@@ -55,6 +90,7 @@ export class ApplicationUser extends CommonEntity {
   }
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword() {
     this.password = await argon2.hash(this.password);
   }

@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
@@ -72,7 +73,7 @@ export class ApplicationUserController {
     const applicationUser: ApplicationUser =
       this.applicationUserDataConverter.toEntity(applicationUserDto);
     return this.applicationUserService
-      .save(applicationUser)
+      .create(applicationUser)
       .then((applicationUser: ApplicationUser) =>
         this.applicationUserDataConverter.toDto(applicationUser),
       );
@@ -83,12 +84,13 @@ export class ApplicationUserController {
   public async update(
     @Param('uuid', new UUIDPipe()) uuid: string,
     @Body() applicationUserDto: ApplicationUserDto,
+    @Req() req,
   ): Promise<ApplicationUserDto> {
     const applicationUser: ApplicationUser =
       this.applicationUserDataConverter.toEntity(applicationUserDto);
     applicationUser.uuid = uuid;
     return this.applicationUserService
-      .save(applicationUser)
+      .update(applicationUser, req.user)
       .then((applicationUser: ApplicationUser) =>
         this.applicationUserDataConverter.toDto(applicationUser),
       );

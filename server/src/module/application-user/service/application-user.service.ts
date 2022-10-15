@@ -1,12 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { validateOrReject } from 'class-validator';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { User } from '../../auth/model/user.model';
 import { Repository } from 'typeorm';
+import { applicationUserValidationOptions } from '../costant/application-user-validation-options.constant';
 import { ApplicationUser } from '../entity/application-user.entity';
+import { ApplicationUserAction } from '../type/application-user.action';
 
 @Injectable()
 export class ApplicationUserService {
@@ -39,15 +43,44 @@ export class ApplicationUserService {
     });
   }
 
-  public async save(
+  public async create(
     applicationUser: ApplicationUser,
   ): Promise<ApplicationUser> {
+    await validateOrReject(
+      applicationUser,
+      applicationUserValidationOptions[ApplicationUserAction.CREATE],
+    );
+    return this.applicationUserRepository.save(applicationUser);
+  }
+
+  public async update(
+    applicationUser: ApplicationUser,
+    user: User,
+  ): Promise<ApplicationUser> {
+    delete applicationUser.login;
+    if (
+      user.uuid == applicationUser.uuid &&
+      applicationUser.applicationUserType &&
+      user.applicationUserType != applicationUser.applicationUserType
+    ) {
+      throw new BadRequestException(
+        "You can't change own Application User Type",
+      );
+    }
+    await validateOrReject(
+      applicationUser,
+      applicationUserValidationOptions[ApplicationUserAction.UPDATE],
+    );
     return this.applicationUserRepository.save(applicationUser);
   }
 
   public async remove(
     applicationUser: ApplicationUser,
   ): Promise<ApplicationUser> {
+    await validateOrReject(
+      applicationUser,
+      applicationUserValidationOptions[ApplicationUserAction.REMOVE],
+    );
     return this.applicationUserRepository.softRemove(applicationUser);
   }
 }

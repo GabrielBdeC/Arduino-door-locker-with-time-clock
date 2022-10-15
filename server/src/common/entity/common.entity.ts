@@ -1,4 +1,11 @@
-import { CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import {
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  BeforeInsert,
+  BeforeUpdate,
+  BeforeSoftRemove,
+} from 'typeorm';
 
 export abstract class CommonEntity {
   @CreateDateColumn({
@@ -21,4 +28,13 @@ export abstract class CommonEntity {
     nullable: true,
   })
   public deletedAt: Date;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  @BeforeSoftRemove()
+  public removeTimeBaseColumns() {
+    delete this.createdAt;
+    delete this.changedAt;
+    delete this.deletedAt;
+  }
 }

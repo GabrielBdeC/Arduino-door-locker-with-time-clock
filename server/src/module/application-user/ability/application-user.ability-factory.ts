@@ -17,7 +17,7 @@ type AppAbility = Ability<[ApplicationUserAction, Subjects]>;
 @Injectable()
 export class ApplicationUserAbilityFactory {
   public defineAbility(user: User) {
-    const { can, build } = new AbilityBuilder(
+    const { can, cannot, build } = new AbilityBuilder(
       Ability as AbilityClass<AppAbility>,
     );
     if (user.applicationUserType == ApplicationUserType.ADMIN) {
@@ -27,6 +27,9 @@ export class ApplicationUserAbilityFactory {
         uuid: user.uuid,
       });
       can(ApplicationUserAction.UPDATE, ApplicationUser, {
+        uuid: user.uuid,
+      });
+      cannot(ApplicationUserAction.REMOVE, ApplicationUser, {
         uuid: user.uuid,
       });
     }

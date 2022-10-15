@@ -1,17 +1,14 @@
-import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsString, Length, Matches } from 'class-validator';
 
 export class Login {
-  @IsNotEmpty({
-    message: 'Logib value must not be empty. Please provide an login.',
-  })
   @IsString({ message: 'Login value must be a string.' })
-  @Length(6, 84)
+  @Length(4, 84)
   public login: string;
 
-  @IsNotEmpty({
-    message: 'Password value must not be empty. Please provide an password;.',
-  })
   @IsString({ message: 'Password value must be a string.' })
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message: 'Password too weak.',
+  })
   @Length(8, 128)
   public password: string;
 }
