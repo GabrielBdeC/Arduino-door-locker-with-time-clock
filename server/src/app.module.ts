@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './module/auth/auth.module';
-import { DoorLockerUserModule } from './module/door-locker-user/door-locker-user.module';
+import { DoorLockerModule } from './module/door-locker/door-locker.module';
 import { HealthCheckModule } from './module/health-check/health-check.module';
 import { ApplicationUserModule } from './module/application-user/application-user.module';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
@@ -13,7 +13,7 @@ import { CoreModule } from './core/core.module';
     CoreModule,
     AuthModule,
     ApplicationUserModule,
-    DoorLockerUserModule,
+    DoorLockerModule,
     HealthCheckModule,
   ],
   providers: [

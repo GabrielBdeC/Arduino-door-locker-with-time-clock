@@ -103,13 +103,11 @@ export class ApplicationUserController {
   @ApplicationUserAbilities(ApplicationUserAction.REMOVE)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async remove(
-    @Param('uuid') uuid: string,
-    @Body() applicationUserDto: ApplicationUserDto,
+    @Param('uuid', new UUIDPipe()) uuid: string,
     @Req() req,
-  ) {
-    const applicationUser: ApplicationUser =
-      this.applicationUserDataConverter.toEntity(applicationUserDto);
+  ): Promise<void> {
+    const applicationUser: ApplicationUser = new ApplicationUser();
     applicationUser.uuid = uuid;
-    this.applicationUserService.remove(applicationUser, req.user);
+    return this.applicationUserService.remove(applicationUser, req.user);
   }
 }

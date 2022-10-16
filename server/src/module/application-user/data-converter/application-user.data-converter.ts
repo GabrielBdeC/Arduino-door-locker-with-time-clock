@@ -29,9 +29,7 @@ export class ApplicationUserDataConverter {
     }
     entity.login = dto.login;
     entity.password = dto.password;
-    if (dto.applicationUserType) {
-      entity.applicationUserType = ApplicationUserType[dto.applicationUserType];
-    }
+    entity.applicationUserType = ApplicationUserType[dto.applicationUserType];
     return entity;
   }
 }

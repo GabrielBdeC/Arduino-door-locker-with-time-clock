@@ -14,7 +14,7 @@ import * as argon2 from 'argon2';
 import { ApplicationUserType } from '../type/application-user.type';
 import { IsEnum, IsOptional, IsString, Length, Matches } from 'class-validator';
 import { ApplicationUserAction } from '../type/application-user.action';
-import { IsDbUUIDv4 } from 'src/common/decorator/IsDbUUIDv4.decorator';
+import { IsDbUUIDv4 } from '../../../common/decorator/IsDbUUIDv4.decorator';
 
 @Entity({
   name: 'application_user',
@@ -34,7 +34,7 @@ export class ApplicationUser extends CommonEntity {
     comment: 'used in DTO',
   })
   @IsDbUUIDv4({
-    groups: [ApplicationUserAction.UPDATE, ApplicationUserAction.REMOVE],
+    groups: [ApplicationUserAction.UPDATE],
   })
   public uuid: string;
 
@@ -60,13 +60,19 @@ export class ApplicationUser extends CommonEntity {
     comment: 'ARGON2',
   })
   @IsOptional({
-    groups: [ApplicationUserAction.UPDATE, ApplicationUserAction.REMOVE],
+    groups: [ApplicationUserAction.UPDATE],
   })
-  @IsString({ message: 'Password value must be a string.' })
+  @IsString({
+    groups: [ApplicationUserAction.CREATE, ApplicationUserAction.UPDATE],
+    message: 'Password value must be a string.',
+  })
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    groups: [ApplicationUserAction.CREATE, ApplicationUserAction.UPDATE],
     message: 'Password too weak.',
   })
-  @Length(8, 128)
+  @Length(8, 128, {
+    groups: [ApplicationUserAction.CREATE, ApplicationUserAction.UPDATE],
+  })
   public password: string;
 
   @Column({
@@ -75,30 +81,34 @@ export class ApplicationUser extends CommonEntity {
     enum: ApplicationUserType,
     default: ApplicationUserType.USER,
   })
-  @IsOptional()
-  @IsEnum(ApplicationUserType)
+  @IsOptional({
+    groups: [ApplicationUserAction.CREATE, ApplicationUserAction.UPDATE],
+  })
+  @IsEnum(ApplicationUserType, {
+    groups: [ApplicationUserAction.CREATE, ApplicationUserAction.UPDATE],
+  })
   public applicationUserType: ApplicationUserType;
 
   @OneToOne(() => ApplicationUser)
   @JoinColumn({ name: `created_by` })
-  createdBy: ApplicationUser;
+  public createdBy: ApplicationUser;
 
   @OneToOne(() => ApplicationUser)
   @JoinColumn({ name: `changed_by` })
-  changedBy: ApplicationUser;
+  public changedBy: ApplicationUser;
 
   @OneToOne(() => ApplicationUser)
   @JoinColumn({ name: `deleted_by` })
-  deletedBy: ApplicationUser;
+  public deletedBy: ApplicationUser;
 
   @BeforeInsert()
-  generateUuid() {
+  public generateUuid() {
     this.uuid = uuid4().replace(/-/g, '').toUpperCase();
   }
 
   @BeforeInsert()
   @BeforeUpdate()
-  async hashPassword() {
+  public async hashPassword() {
     this.password = await argon2.hash(this.password);
   }
 

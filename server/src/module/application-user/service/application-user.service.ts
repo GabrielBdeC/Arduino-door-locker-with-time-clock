@@ -94,11 +94,10 @@ export class ApplicationUserService {
       });
   }
 
-  public async remove(applicationUser: ApplicationUser, user: User) {
-    await validateOrReject(
-      applicationUser,
-      applicationUserValidationOptions[ApplicationUserAction.REMOVE],
-    );
+  public async remove(
+    applicationUser: ApplicationUser,
+    user: User,
+  ): Promise<void> {
     const applicationUserDeleter: ApplicationUser = new ApplicationUser();
     applicationUserDeleter.id = user.id;
     return this.applicationUserRepository
