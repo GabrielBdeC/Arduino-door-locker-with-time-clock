@@ -29,7 +29,6 @@ export class DoorLockerUserDataConverter {
     }
     entity.name = dto.name;
     entity.institutionCode = dto.institutionCode;
-    entity.rfid = dto.rfid;
     entity.authorization = dto.authorization;
     return entity;
   }

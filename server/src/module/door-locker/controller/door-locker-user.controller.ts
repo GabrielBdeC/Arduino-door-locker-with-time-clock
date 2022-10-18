@@ -1,11 +1,14 @@
 import {
+  BadRequestException,
   Body,
+  CACHE_MANAGER,
   Controller,
   DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseIntPipe,
   Post,
@@ -23,6 +26,7 @@ import { DoorLockerUserAbilities } from '../decorator/door-locker-user-abilities
 import { DoorLockerUserAction } from '../type/door-locker-user.action';
 import { DoorLockerUserGuard } from '../guard/door-locker-user.guard';
 import { UUIDPipe } from '../../../common/pipe/uuid.pipe';
+import { Cache } from 'cache-manager';
 
 @UseGuards(DoorLockerUserGuard)
 @Controller('v1/door_locker_user')
@@ -30,6 +34,7 @@ export class DoorLockerUserController {
   constructor(
     private doorLockerUserService: DoorLockerUserService,
     private doorLockerUserDataConverter: DoorLockerUserDataConverter,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   @Get()
@@ -75,11 +80,22 @@ export class DoorLockerUserController {
   ): Promise<DoorLockerUserDto> {
     const doorLockerUser: DoorLockerUser =
       this.doorLockerUserDataConverter.toEntity(doorLockerUserDto);
-    return this.doorLockerUserService
-      .create(doorLockerUser, req.user)
-      .then((doorLockerUser: DoorLockerUser) =>
-        this.doorLockerUserDataConverter.toDto(doorLockerUser),
-      );
+    const rfid = await this.cacheManager.get('rfid');
+    if (!rfid) {
+      throw new BadRequestException('No Rfid stored');
+    } else {
+      doorLockerUser.rfid = <string>rfid;
+      return this.doorLockerUserService
+        .create(doorLockerUser, req.user)
+        .then(
+          async (
+            doorLockerUser: DoorLockerUser,
+          ): Promise<DoorLockerUserDto> => {
+            await this.cacheManager.del('rfid');
+            return this.doorLockerUserDataConverter.toDto(doorLockerUser);
+          },
+        );
+    }
   }
 
   @Put('/:uuid')
@@ -92,10 +108,19 @@ export class DoorLockerUserController {
     const doorLockerUser: DoorLockerUser =
       this.doorLockerUserDataConverter.toEntity(doorLockerUserDto);
     doorLockerUser.uuid = uuid;
+    const rfid = await this.cacheManager.get('rfid');
+    if (rfid) {
+      doorLockerUser.rfid = <string>rfid;
+    }
     return this.doorLockerUserService
       .update(doorLockerUser, req.user)
-      .then((doorLockerUser: DoorLockerUser) =>
-        this.doorLockerUserDataConverter.toDto(doorLockerUser),
+      .then(
+        async (doorLockerUser: DoorLockerUser): Promise<DoorLockerUserDto> => {
+          if (rfid) {
+            await this.cacheManager.del('rfid');
+          }
+          return this.doorLockerUserDataConverter.toDto(doorLockerUser);
+        },
       );
   }
 

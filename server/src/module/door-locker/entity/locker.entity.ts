@@ -1,6 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { IsNumberString, IsOptional } from 'class-validator';
-import { DoorLockerUserAction } from '../type/door-locker-user.action';
+import { IsNumberString } from 'class-validator';
 
 @Entity({
   name: 'door_locker_user',
