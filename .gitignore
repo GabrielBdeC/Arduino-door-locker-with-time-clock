@@ -1,6 +1,9 @@
 # compiled output
+/application/dist
+/application/tmp
+/application/out-tsc
+/application/bazel-out
 /server/dist
-/server/node_modules
 
 # Logs
 /server/logs
@@ -12,10 +15,14 @@
 /server/lerna-debug.log*
 
 # Env
-/**/.env
+/application/.env
+/server/.env
 
 # OS
+/application/.DS_Store
+/application/Thumbs.db
 /server/.DS_Store
+/server/Thumbs.db
 
 # Tests
 /server/coverage
@@ -36,3 +43,19 @@
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.history/*
+
+# Node
+/application/node_modules
+/application/npm-debug.log
+/application/yarn-error.log
+/server/node_modules
+
+# Miscellaneous
+/application/.angular/cache
+/application.sass-cache/
+/application/connect.lock
+/application/coverage
+/application/libpeerconnection.log
+/applicationtestem.log
+/application/typings
