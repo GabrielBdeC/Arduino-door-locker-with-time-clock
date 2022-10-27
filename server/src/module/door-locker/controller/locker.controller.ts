@@ -55,7 +55,7 @@ export class LockerController {
               event: 'rfid',
               data: 'success',
             });
-            return 'OK';
+            return 'STORED';
           } else {
             throw err;
           }
