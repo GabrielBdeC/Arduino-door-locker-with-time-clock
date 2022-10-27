@@ -59,3 +59,7 @@
 /application/libpeerconnection.log
 /applicationtestem.log
 /application/typings
+
+#hardware
+/hardware/.vscode
+/hardware/.zip

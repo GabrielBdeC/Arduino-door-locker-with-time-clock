@@ -1,8 +1,31 @@
+//http://arduino.esp8266.com/stable/package_esp8266com_index.json
+//Include Wifi
 #include <WiFi.h>
+//Include http
 #include <HTTPClient.h>
+//Include LCD_I2C
+#include <LiquidCrystal_I2C.h>
+//Include RFID reader
+#include <MFRC522.h>
+#include <SPI.h>
+
+//Config RfID
+#define SS_PIN 10
+#define RST_PIN 9
+
+//Config Button and Locker
+#define button 11
+#define locker 12
+ 
+//Classes
+HTTPClient http;
+MFRC522 rfid(SS_PIN, RST_PIN); 
+MFRC522::MIFARE_Key key;
+LiquidCrystal_I2C lcd(0x27, 20, 04);
+hw_timer_t* timer = NULL;
+
 
 //Variables
-HTTPClient http;
 String token;
 String readString;
 size_t safeRepetitionToken = 0;
@@ -91,7 +114,7 @@ void getToken(){
 }
 
 //Checks if RFID is valid on Data Base
-String isOnDB(String rfid){
+void isOnDB(String rfid){
     http.begin("http://192.168.3.8:3000/api/door_locker/v1/locker");
     String bearer = "Bearer ";
     bearer += token;
@@ -103,21 +126,91 @@ String isOnDB(String rfid){
         safeRepetitionUpdateToken = 0;
         String payload = http.getString();
         http.end();
-        return payload;
+        
+        if (payload == "OK")
+        {
+            lcd.clear();
+            lcd.setCursor(7,0);
+            lcd.print("LabTeC");
+            lcd.setCursor(0,2);
+            lcd.print("Cartão enviado");
+            lcd.setCursor(0,3);
+            lcd.print("para cadastro");
+            timerRestart(timer);
+        }
+        else{
+            lcd.clear();
+            lcd.setCursor(7,0);
+            lcd.print("LabTeC");
+            lcd.setCursor(0,2);
+            lcd.print("Bem vindo(a)");
+            if(payload.length()>20){
+                for (int i=0; i < 20; i++) {
+                    payload = " " + payload;  
+                } 
+                payload = payload + " "; 
+                for (int pos = 0; pos < payload.length(); pos++) {
+                    lcd.setCursor(0, 3);
+                    lcd.print(payload.substring(pos, pos + 20));
+                    delay(500);
+                }
+            }
+            else{
+                lcd.setCursor(0,3);
+                lcd.print(payload);
+            } 
+            timerRestart(timer);
+            digitalWrite(locker, HIGH);
+            delay(100);
+            digitalWrite(locker, HIGH);
+        }   
+    }
+    else if (httpPost == 404)
+    {
+        lcd.clear();
+        lcd.setCursor(7,0);
+        lcd.print("LabTeC");
+        lcd.setCursor(0,1);
+        lcd.print("Falha na leitua");
+        lcd.setCursor(0,2);
+        lcd.print("ou");
+        lcd.setCursor(0,3);
+        lcd.print("Não cadastrado");
     }
     else if (httpPost == 401 && safeRepetitionUpdateToken < 5) //Verificar se o código é 401 depois de espirar
     {
         safeRepetitionUpdateToken++;
         getToken();
-        return isOnDB(rfid);
+        isOnDB(rfid);
     }
     else{
         Serial.print("isOnDB: ");
         Serial.println(httpPost);
         safeRepetitionUpdateToken = 0;
         http.end();
-        return "";
+
+        lcd.clear();
+        lcd.setCursor(7,0);
+        lcd.print("LabTeC");
+        lcd.setCursor(0,1);
+        lcd.print("Falha ao conectar");
+        lcd.setCursor(0,2);
+        lcd.print("com o");
+        lcd.setCursor(0,3);
+        lcd.print("Servidor");
     } 
+}
+
+//LCD rest
+void lcdRest(){
+    lcd.clear();
+    lcd.setCursor(7,0);
+    lcd.print("LabTeC");
+    lcd.setCursor(0,2);
+    lcd.print("Aproxime seu cartão");
+    lcd.setCursor(0,3);
+    lcd.print("ao lado do visor");
+    timerAlarmDisable(timer);
 }
 
 //Start of the program
@@ -126,38 +219,25 @@ void setup(){
     Serial.begin(115200);    
     WifiSetup();
     getToken();
+    pinMode(button, INPUT);
+    pinMode(locker, OUTPUT);
+    rfid.PCD_Init();
+    lcd.init();
+    lcd.backlight();
+    lcdRest();
+    timer = timerBegin(0, 80, true);
+    timerAttachInterrupt(timer, &lcdRest, true);
+    timerAlarmWrite(timer, 2000000, true);
+    timerAlarmDisable(timer);
 }
 
-bool readSerial = false;
 void loop(){
-    if (Serial.available()){
-        char c = Serial.read();  //gets one byte from serial buffer
-        if (c == '\n'||c=='\r') {
-            //do stuff
-            // Serial.println(readString); //prints string to serial port out            
-            readSerial = true;
-        }  
-        else {     
-            readString += c; //makes the string readString
+    if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()){
+        String cardUID;
+        for (size_t i = 0; i < rfid.uid.size; i++)
+        {
+            cardUID.concat(String(rfid.uid.uidByte[i]));
         }
-    }
-    if(readSerial){
-        unsigned long start_timer = micros();
-        String teste = isOnDB(readString);
-        unsigned long end_timer = micros();
-
-        Serial.println(teste);
-
-        if(teste.length()>0){
-            Serial.println("Dor unlocked");            
-        }        
-        else{
-            Serial.println("Acsess Denied");
-        }
-        Serial.print(F("Time to transmit = "));
-        Serial.println(end_timer - start_timer);
-
-        readString=""; //clears variable for new input
-        readSerial = false;
+        isOnDB(cardUID);
     }
 }
