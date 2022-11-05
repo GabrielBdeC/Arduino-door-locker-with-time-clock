@@ -27,6 +27,7 @@ import { DoorLockerUserAction } from '../type/door-locker-user.action';
 import { DoorLockerUserGuard } from '../guard/door-locker-user.guard';
 import { UUIDPipe } from '../../../common/pipe/uuid.pipe';
 import { Cache } from 'cache-manager';
+import { LockerWsService } from '../service/locker-ws.service';
 
 @UseGuards(DoorLockerUserGuard)
 @Controller('v1/door_locker_user')
@@ -34,6 +35,7 @@ export class DoorLockerUserController {
   constructor(
     private doorLockerUserService: DoorLockerUserService,
     private doorLockerUserDataConverter: DoorLockerUserDataConverter,
+    private lockerWsService: LockerWsService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -92,6 +94,7 @@ export class DoorLockerUserController {
             doorLockerUser: DoorLockerUser,
           ): Promise<DoorLockerUserDto> => {
             await this.cacheManager.del('rfid');
+            this.lockerWsService.sendMessage('closed');
             return this.doorLockerUserDataConverter.toDto(doorLockerUser);
           },
         );
@@ -119,6 +122,7 @@ export class DoorLockerUserController {
           if (rfid) {
             await this.cacheManager.del('rfid');
           }
+          this.lockerWsService.sendMessage('closed');
           return this.doorLockerUserDataConverter.toDto(doorLockerUser);
         },
       );

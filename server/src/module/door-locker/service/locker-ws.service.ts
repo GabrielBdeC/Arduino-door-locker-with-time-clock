@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Subject } from 'rxjs';
-import { LockerWsDto } from '../dto/locker-ws.dto';
 
 @Injectable()
 export class LockerWsService {
-  private readonly subjectLocker = new Subject<LockerWsDto>();
+  private readonly subjectLocker = new Subject<string>();
   public readonly subjectLockerObservable = this.subjectLocker.asObservable();
 
-  public sendMessage(value: LockerWsDto): void {
+  public sendMessage(value: string): void {
     this.subjectLocker.next(value);
   }
 }
