@@ -10,12 +10,12 @@
 #include <SPI.h>
 
 //Config RfID
-#define SS_PIN 10
-#define RST_PIN 9
+#define SS_PIN 32
+#define RST_PIN 33
 
 //Config Button and Locker
-#define button 11
-#define locker 12
+#define button 2
+#define locker 4
  
 //Classes
 HTTPClient http;
@@ -38,11 +38,14 @@ void WifiSetup() {
   WiFi.begin("TDLR", "Thiago2001");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(".");
+    // Serial.print(".");
   }
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+    lcd.clear(); 
+    lcd.setCursor(3,0);
+    lcd.print("WiFi connected");
+//   Serial.println("WiFi connected");
+//   Serial.println("IP address: ");
+//   Serial.println(WiFi.localIP());
 }
 
 //Get Request
@@ -55,14 +58,14 @@ bool get(String module_url, bool isProtected) {
     if(httpGet  == 200){
         String payload = http.getString();
         
-        Serial.print("Get Function payload: ");
-        Serial.println(payload);
+        // Serial.print("Get Function payload: ");
+        // Serial.println(payload);
         http.end();
         return true;
     }
     else{            
-        Serial.print("Get Function recived code: ");
-        Serial.println(httpGet);
+        // Serial.print("Get Function recived code: ");
+        // Serial.println(httpGet);
         http.end();
         return false;
     }
@@ -95,19 +98,19 @@ void getToken(){
     else{     
         if (getHealth)
         {
-            Serial.print("Get Token Function code: ");
-            Serial.println(httpPost);
+            // Serial.print("Get Token Function code: ");
+            // Serial.println(httpPost);
             if (safeRepetitionToken < 5){
                 safeRepetitionToken++;
                 getToken();
             }
             else{
-                Serial.println("Error getting token: Call for assistence");
+                // Serial.println("Error getting token: Call for assistence");
                 safeRepetitionToken = 0;
             }            
         }
         else{
-            Serial.println("Server offline");
+            // Serial.println("Server offline");
         }
     }
     http.end();
@@ -144,6 +147,10 @@ void isOnDB(String rfid){
             lcd.print("LabTeC");
             lcd.setCursor(0,2);
             lcd.print("Bem vindo(a)");
+            int index1 = payload.indexOf("\"name\":\"")+8;
+            payload.remove(0, index1);
+            int index2 = payload.indexOf("\"");
+            payload.remove(index2, payload.length());
             if(payload.length()>20){
                 for (int i=0; i < 20; i++) {
                     payload = " " + payload;  
@@ -162,7 +169,7 @@ void isOnDB(String rfid){
             timerRestart(timer);
             digitalWrite(locker, HIGH);
             delay(100);
-            digitalWrite(locker, HIGH);
+            digitalWrite(locker, LOW);
         }   
     }
     else if (httpPost == 404)
@@ -184,8 +191,9 @@ void isOnDB(String rfid){
         isOnDB(rfid);
     }
     else{
-        Serial.print("isOnDB: ");
-        Serial.println(httpPost);
+        //Fazer algo aqui
+        // Serial.print("isOnDB: ");
+        // Serial.println(httpPost);
         safeRepetitionUpdateToken = 0;
         http.end();
 
@@ -201,8 +209,8 @@ void isOnDB(String rfid){
     } 
 }
 
-//LCD rest
-void lcdRest(){
+//LCD reset
+void lcdReset(){
     lcd.clear();
     lcd.setCursor(7,0);
     lcd.print("LabTeC");
@@ -210,13 +218,13 @@ void lcdRest(){
     lcd.print("Aproxime seu cartão");
     lcd.setCursor(0,3);
     lcd.print("ao lado do visor");
-    timerAlarmDisable(timer);
+    timerStop(timer);
 }
 
 //Start of the program
 //Setup
 void setup(){
-    Serial.begin(115200);    
+    // Serial.begin(115200);    
     WifiSetup();
     getToken();
     pinMode(button, INPUT);
@@ -224,19 +232,21 @@ void setup(){
     rfid.PCD_Init();
     lcd.init();
     lcd.backlight();
-    lcdRest();
-    timer = timerBegin(0, 80, true);
-    timerAttachInterrupt(timer, &lcdRest, true);
-    timerAlarmWrite(timer, 2000000, true);
-    timerAlarmDisable(timer);
+    lcdReset();
+    timer = timerBegin(0, 80, true);  // timer 0, MWDT clock period = 12.5 ns * TIMGn_Tx_WDT_CLK_PRESCALE -> 12.5 ns * 80 -> 1000 ns = 1 us, countUp
+    timerAttachInterrupt(timer, &lcdReset, true); // edge (not level) triggered 
+    timerAlarmWrite(timer, 5000000, true); // 1000000 * 1 us = 1 s, autoreload true
+    timerAlarmEnable(timer); // enable
+    timerStop(timer);
 }
 
 void loop(){
-    if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()){
+    // if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()){
         String cardUID;
         for (size_t i = 0; i < rfid.uid.size; i++)
         {
-            cardUID.concat(String(rfid.uid.uidByte[i]));
+            cardUID.concat(String(rfid.uid.uidByte[i] < 0x10 ? "0" : ""));
+            cardUID.concat(String(rfid.uid.uidByte[i], HEX));
         }
         isOnDB(cardUID);
     }
