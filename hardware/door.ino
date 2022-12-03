@@ -72,6 +72,41 @@ bool getProtectedHealth(){
     return get("v1/auth/protected_check", true);
 }
 
+//Error handler
+bool errorHandler(int errorCode, int errorPlace){
+	//1-getToken
+	//2-isOnBd
+	if(errorCode == 401){
+        getToken();
+    }
+	else if(errorCode == 500){	//Server Internal Error
+		lcd.clear();
+        lcd.setCursor(7,0);
+        lcd.print("LabTeC");
+        lcd.setCursor(0,1);
+        lcd.print("Falha interna");
+        lcd.setCursor(0,2);
+        lcd.print("no Servidor");
+        lcd.setCursor(0,3);
+        lcd.print("Servidor");
+	}
+	else if(errorCode == 400){
+		//Bad request -> Algo errado porra
+	}
+	else if(errorCode < 0){	//Server not reached
+		
+		lcd.clear();
+        lcd.setCursor(7,0);
+        lcd.print("LabTeC");
+        lcd.setCursor(0,1);
+        lcd.print("Falha ao conectar");
+        lcd.setCursor(0,2);
+        lcd.print("com o");
+        lcd.setCursor(0,3);
+        lcd.print("Servidor");
+	}
+}
+
 //Get Token
 void getToken(){
     http.begin(String(URL) + "v1/auth/login");
@@ -86,26 +121,14 @@ void getToken(){
         token = payload;
         safeRepetitionToken = 0;
     }
-    else{
-        if (getHealth)
-        {
-            if (safeRepetitionToken < 5){
-                safeRepetitionToken++;
-                getToken();
-            }
-            else{
-                safeRepetitionToken = 0;
-            }            
-        }
-        else{
-            // Serial.println("Server offline");
-        }
-    }
+    else {
+		errorHandler(httpPost, 1);
+	}	
     http.end();
 }
 
 //Checks if RFID is valid on Data Base
-void isOnDB(String rfid){
+void isOnDd(String rfid){
     http.begin(String(URL) + "/v1/locker");
     String bearer = "Bearer ";
     bearer += token;
@@ -172,29 +195,12 @@ void isOnDB(String rfid){
         lcd.setCursor(0,3);
         lcd.print("Não cadastrado");
     }
-    else if (httpPost == 401 && safeRepetitionUpdateToken < 5) //Verificar se o código é 401 depois de espirar
-    {
-        safeRepetitionUpdateToken++;
-        getToken();
-        isOnDB(rfid);
-    }
     else{
-        //Fazer algo aqui
-        // Serial.print("isOnDB: ");
-        // Serial.println(httpPost);
-        safeRepetitionUpdateToken = 0;
-        http.end();
-
-        lcd.clear();
-        lcd.setCursor(7,0);
-        lcd.print("LabTeC");
-        lcd.setCursor(0,1);
-        lcd.print("Falha ao conectar");
-        lcd.setCursor(0,2);
-        lcd.print("com o");
-        lcd.setCursor(0,3);
-        lcd.print("Servidor");
-    } 
+		if(errorHandler(httpPost, 2)){
+			isOnDd(rfid);
+		}
+		http.end();
+	}
 }
 
 //LCD reset
@@ -236,6 +242,6 @@ void loop(){
             cardUID.concat(String(rfid.uid.uidByte[i] < 0x10 ? "0" : ""));
             cardUID.concat(String(rfid.uid.uidByte[i], HEX));
         }
-        isOnDB(cardUID);
+        isOnDd(cardUID);
     }
 }
