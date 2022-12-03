@@ -7,15 +7,17 @@
 #include <LiquidCrystal_I2C.h>
 //Include RFID reader
 #include <MFRC522.h>
-#include <SPI.h>
 
-//Config RfID
+//Config RfID ports
 #define SS_PIN 32
 #define RST_PIN 33
 
-//Config Button and Locker
+//Config Button and Locker ports
 #define button 2
 #define locker 4
+
+//Server url
+#define URL "http://192.168.3.8:3000/api/door_locker/"
  
 //Classes
 HTTPClient http;
@@ -27,45 +29,34 @@ hw_timer_t* timer = NULL;
 
 //Variables
 String token;
-String readString;
 size_t safeRepetitionToken = 0;
 size_t safeRepetitionUpdateToken = 0;
-int signalIntensity = 0;
 
 //Functions
 //Wifi Setup
-void WifiSetup() {
+void wifiSetup() {
   WiFi.begin("TDLR", "Thiago2001");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    // Serial.print(".");
   }
     lcd.clear(); 
     lcd.setCursor(3,0);
     lcd.print("WiFi connected");
-//   Serial.println("WiFi connected");
-//   Serial.println("IP address: ");
-//   Serial.println(WiFi.localIP());
+	delay(1000);
 }
 
 //Get Request
 bool get(String module_url, bool isProtected) {    
-    http.begin("http://192.168.3.8:3000/api/door_locker/" + module_url);
+    http.begin(URL + module_url);
     if(isProtected){
         http.addHeader("Authorization", "Bearer " + token);        
     }
     int httpGet = http.GET();
     if(httpGet  == 200){
-        String payload = http.getString();
-        
-        // Serial.print("Get Function payload: ");
-        // Serial.println(payload);
         http.end();
         return true;
     }
     else{            
-        // Serial.print("Get Function recived code: ");
-        // Serial.println(httpGet);
         http.end();
         return false;
     }
@@ -77,13 +68,13 @@ bool getHealth(){
 }
 
 //Get Protected Health
-bool getProHealth(){
+bool getProtectedHealth(){
     return get("v1/auth/protected_check", true);
 }
 
 //Get Token
 void getToken(){
-    http.begin("http://192.168.3.8:3000/api/door_locker/v1/auth/login");
+    http.begin(String(URL) + "v1/auth/login");
     http.addHeader("Content-Type", "application/json");
     int httpPost = http.POST("{\"login\": \"arduino\", \"password\": \"Ra!63NW4^R67\"}");
     if(httpPost  == 201){
@@ -95,17 +86,14 @@ void getToken(){
         token = payload;
         safeRepetitionToken = 0;
     }
-    else{     
+    else{
         if (getHealth)
         {
-            // Serial.print("Get Token Function code: ");
-            // Serial.println(httpPost);
             if (safeRepetitionToken < 5){
                 safeRepetitionToken++;
                 getToken();
             }
             else{
-                // Serial.println("Error getting token: Call for assistence");
                 safeRepetitionToken = 0;
             }            
         }
@@ -118,12 +106,12 @@ void getToken(){
 
 //Checks if RFID is valid on Data Base
 void isOnDB(String rfid){
-    http.begin("http://192.168.3.8:3000/api/door_locker/v1/locker");
+    http.begin(String(URL) + "/v1/locker");
     String bearer = "Bearer ";
     bearer += token;
     http.addHeader("Authorization", "Bearer " + token);
     http.addHeader("Content-Type", "application/json");
-    int httpPost = http.POST("{\"rfid\": \"" + readString + "\"}");
+    int httpPost = http.POST("{\"rfid\": \"" + rfid + "\"}");
 
     if(httpPost  == 200){
         safeRepetitionUpdateToken = 0;
@@ -225,7 +213,7 @@ void lcdReset(){
 //Setup
 void setup(){
     // Serial.begin(115200);    
-    WifiSetup();
+    wifiSetup();
     getToken();
     pinMode(button, INPUT);
     pinMode(locker, OUTPUT);
@@ -233,15 +221,15 @@ void setup(){
     lcd.init();
     lcd.backlight();
     lcdReset();
-    timer = timerBegin(0, 80, true);  // timer 0, MWDT clock period = 12.5 ns * TIMGn_Tx_WDT_CLK_PRESCALE -> 12.5 ns * 80 -> 1000 ns = 1 us, countUp
-    timerAttachInterrupt(timer, &lcdReset, true); // edge (not level) triggered 
-    timerAlarmWrite(timer, 5000000, true); // 1000000 * 1 us = 1 s, autoreload true
-    timerAlarmEnable(timer); // enable
+    timer = timerBegin(0, 80, true);                // timer 0, MWDT clock period = 12.5 ns * TIMGn_Tx_WDT_CLK_PRESCALE -> 12.5 ns * 80 -> 1000 ns = 1 us, countUp
+    timerAttachInterrupt(timer, &lcdReset, true);   // edge (not level) triggered 
+    timerAlarmWrite(timer, 5000000, true);          // 1000000 * 1 us = 1 s, autoreload true
+    timerAlarmEnable(timer);                        // enable
     timerStop(timer);
 }
 
 void loop(){
-    // if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()){
+    if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()){
         String cardUID;
         for (size_t i = 0; i < rfid.uid.size; i++)
         {
