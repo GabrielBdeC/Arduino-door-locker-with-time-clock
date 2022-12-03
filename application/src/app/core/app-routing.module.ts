@@ -3,11 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guard/auth.guard';
 
 export const routes: Routes = [
-  {
+/*  {
     path: 'login',
     loadChildren: () =>
       import('../module/login/login.module').then((m) => m.LoginModule),
-  },
+  },*/
   {
     path: 'door_locker_user',
     loadChildren: () =>
