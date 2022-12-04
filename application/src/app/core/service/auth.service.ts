@@ -10,7 +10,7 @@ export class AuthService {
 
   private baseURL: string =
     'http://localhost:3000/api/door_locker/v1/auth/login';
-  
+
   constructor(
     private http: HttpClient
   ) {}

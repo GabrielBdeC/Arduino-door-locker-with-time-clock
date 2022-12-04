@@ -1,5 +1,7 @@
+import { AuthService } from '../../core/service/auth.service';
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { Login } from '../../core/model/login.model';
 
 @Component({
   selector: 'app-login',
@@ -28,9 +30,14 @@ export class LoginComponent {
 
     return this.email.hasError('email') ? 'Não é um email válido' : '';
   }
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder, private authService: AuthService) { }
 
   onSubmit() {
-    this.mostrarLogin = !this.mostrarLogin
+    const login: Login = {
+      login: 'admin',
+      password: 'Admin67!'
+}
+    this.authService.login(login).subscribe(el => {console.log(el)})
+
   }
 }

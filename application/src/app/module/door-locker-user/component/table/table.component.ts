@@ -4,7 +4,7 @@ import { Component, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
-  selector: 'app-table',
+  selector: 'app-door-locker-user-table',
   styleUrls: ['./table.component.css'],
   templateUrl: './table.component.html',
 })
