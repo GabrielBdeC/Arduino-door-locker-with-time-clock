@@ -1,53 +1,54 @@
-<body *ngIf="mostrarLogin">
-
-  <div class="space">
-    <!--
+<div class="background space">
+  <!--
 novalidate (ngSubmit)="onSubmit()"
   -->
-    <form [formGroup]="addressForm" novalidate (ngSubmit)="onSubmit()">
-      <mat-card>
+  <form [formGroup]="loginForm" novalidate (ngSubmit)="onSubmit()">
+    <mat-card>
 
-        <div class="title">
+      <div class="title">
 
-          <mat-card-header>
-            <mat-card-title>Porta Eletrônica Labtec</mat-card-title>
-          </mat-card-header>
+        <mat-card-header>
+          <mat-card-title>Porta Eletrônica Labtec</mat-card-title>
+        </mat-card-header>
+      </div>
+
+      <mat-card-content>
+
+        <div class="form-input">
+          <mat-form-field appearance="fill">
+            <mat-label>Login</mat-label>
+            <input matInput placeholder="login" formControlName="login" required>
+            <mat-error *ngIf="userLogin.invalid"> Um login é necessário </mat-error>
+          </mat-form-field>
         </div>
 
-        <mat-card-content>
-
-          <div class="form-input">
-            <mat-form-field appearance="fill">
-              <mat-label>Email</mat-label>
-              <input matInput placeholder="nome@exemplo.com" [formControl]="email" required>
-              <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="form-input">
-            <mat-form-field appearance="fill">
-              <mat-label>Senha</mat-label>
-              <input matInput [type]="hide ? 'password' : 'text'">
-              <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Esconder Senha'"
-                [attr.aria-pressed]="hide">
-                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-              </button>
-            </mat-form-field>
-
-          </div>
+        <div class="form-input">
+          <mat-form-field appearance="fill">
+            <mat-label>Senha</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" required>
 
 
-        </mat-card-content>
+            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Esconder Senha'"
+              [attr.aria-pressed]="hide">
+              <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
 
-        <div class="button-container">
-          <mat-card-actions>
-            <button mat-raised-button color="primary" type="submit">Login</button>
-          </mat-card-actions>
+            <mat-error *ngIf="userPass.invalid"> Uma senha é necessária</mat-error>
+          </mat-form-field>
+
         </div>
 
-      </mat-card>
+
+      </mat-card-content>
+
+      <div class="button-container">
+        <mat-card-actions>
+          <button mat-raised-button color="primary" type="submit">Login</button>
+        </mat-card-actions>
+      </div>
+
+    </mat-card>
 
 
-    </form>
-  </div>
-</body>
+  </form>
+</div>

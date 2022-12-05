@@ -14,7 +14,7 @@ export const routes: Routes = [
       import('../module/door-locker-user/door-locker-user.module').then(
         (m) => m.DoorLockerUserModule
       ),
-    //canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
   },
   {
     path: 'application_user',

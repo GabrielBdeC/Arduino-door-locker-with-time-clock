@@ -1,43 +1,94 @@
 import { AuthService } from '../../core/service/auth.service';
-import { Component } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Login } from '../../core/model/login.model';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
-  addressForm = this.fb.group({
-    company: null,
-    firstName: [null, Validators.required],
-    lastName: [null, Validators.required],
-    address: [null, Validators.required],
-    address2: null,
 
-  });
 
-  mostrarLogin: boolean = true;
-  hasUnitNumber = false;
-  hide = true;
-  email = new FormControl('', [Validators.required, Validators.email]);
+export class LoginComponent implements OnInit {
+  public loginForm: FormGroup;
+  public hide = true;
 
-  getErrorMessage() {
-    if (this.email.hasError('required')) {
-      return 'Um email válido é necessário';
-    }
+  ngOnInit(): void {
+    this.loginForm = new FormGroup({
+      login: new FormControl('', [Validators.required]),
+      password: new FormControl('', [Validators.required])
 
-    return this.email.hasError('email') ? 'Não é um email válido' : '';
+    });
   }
-  constructor(private fb: FormBuilder, private authService: AuthService) { }
+
+  get userLogin(): any {
+    return this.loginForm.get('login');
+  }
+
+  get userPass(): any {
+    return this.loginForm.get('password');
+  }
+
+
+  constructor(private authService: AuthService, private router: Router, private snackBar: MatSnackBar) { }
 
   onSubmit() {
-    const login: Login = {
-      login: 'admin',
-      password: 'Admin67!'
-}
-    this.authService.login(login).subscribe(el => {console.log(el)})
+    if (this.loginForm.valid) {
+
+      const userLogin = this.loginForm.get('login')?.value;
+      const userPass = this.loginForm.get('password')?.value;
+
+      if (userLogin && userPass) {
+
+        const login: Login = {
+          login: userLogin,
+          password: userPass
+
+
+        }
+
+
+
+
+        this.authService.login(login).subscribe(
+          (el) => {
+            console.log(el)
+            this.router.navigate(['/door_locker_user']);
+          },
+          (error) => {
+            if (error.status = 400) {
+              this.snackBar.open("Senha incorreta", "", {
+                duration: 2000,
+                panelClass: ["error-snackbar"]
+              });
+            } else if (error.status = 404) {
+              this.snackBar.open("Usuário não encontrado", "", {
+                duration: 2000,
+                panelClass: ["error-snackbar"]
+              });
+            }
+          else {
+              this.snackBar.open("Erro desconhecido, favor contatar o administrador", "", {
+                duration: 2000,
+                panelClass: ["error-snackbar"]
+              });
+          }
+        })
+
+
+
+
+
+      }
+
+
+
+    }
 
   }
 }
+
+

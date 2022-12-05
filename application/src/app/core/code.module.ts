@@ -7,6 +7,6 @@ import { AuthService } from './service/auth.service';
 @NgModule({
   imports: [HttpClientModule],
   providers: [AuthService, AuthGuard],
-  //exports: [AuthService]
+  //exports: [AuthGuard]
 })
 export class CoreModule {}

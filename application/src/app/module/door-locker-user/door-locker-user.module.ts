@@ -1,3 +1,4 @@
+import { AuthGuard } from './../../core/guard/auth.guard';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DoorLockerUserComponent } from './door-locker-user.component';
@@ -34,6 +35,7 @@ const routes: Routes = [
       provide: MAT_DATE_LOCALE,
       useValue: 'pt-BR'
     },
+    AuthGuard
   ]
 
 })
