@@ -3,10 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guard/auth.guard';
 
 export const routes: Routes = [
- {
+  {
     path: 'login',
     loadChildren: () =>
       import('../module/login/login.module').then((m) => m.LoginModule),
+    canActivate: [AuthGuard],
   },
   {
     path: 'door_locker_user',
@@ -24,12 +25,12 @@ export const routes: Routes = [
       ),
     canActivate: [AuthGuard],
   },
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: '**', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/door_locker_user', pathMatch: 'full' },
+  { path: '**', redirectTo: '/door_locker_user', pathMatch: 'full' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

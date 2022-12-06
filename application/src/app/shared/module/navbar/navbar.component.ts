@@ -9,7 +9,7 @@ import { AuthService } from 'src/app/core/service/auth.service';
 })
 export class NavbarComponent implements OnInit {
 
-  constructor(private  authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   public logout() {
     this.authService.logout();

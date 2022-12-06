@@ -8,9 +8,9 @@ describe('ModalWarningComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ModalWarningComponent ]
+      declarations: [ModalWarningComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

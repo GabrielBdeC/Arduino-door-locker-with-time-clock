@@ -7,13 +7,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.css'],
 })
 
-
-
 export class AppComponent {
   title = 'Porta-Labtec';
-
-  constructor(public router: Router) {
-
-  }
-
+  constructor(public router: Router) { }
 }

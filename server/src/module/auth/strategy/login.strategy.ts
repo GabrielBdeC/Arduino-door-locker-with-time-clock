@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { ApplicationUser } from '../../application-user/entity/application-user.entity';
@@ -27,7 +27,7 @@ export class LoginStrategy extends PassportStrategy(Strategy, 'login') {
       .validateUser(loginModel)
       .then((applicationUser: ApplicationUser) => {
         if (!applicationUser) {
-          throw new UnauthorizedException();
+          throw new BadRequestException('Invalid credential');
         }
         return this.userDataConverter.toUser(applicationUser);
       });
