@@ -3,11 +3,22 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug local",
       "type": "node-terminal",
-      "name": "Debug NestServer",
       "request": "launch",
       "command": "yarn run start:dev",
       "cwd": "${workspaceFolder}/server"
+    },
+    {
+      "name": "Debug docker",
+      "type": "node",
+      "request": "attach",
+      "remoteRoot": "/usr/src/app/server",
+      "localRoot": "${workspaceFolder}/server",
+      "port": 9229,
+      "restart": true,
+      "address": "0.0.0.0",
+      "skipFiles": ["<node_internals>/**"]
     },
     {
       "name": "ng serve",
