@@ -1,0 +1,16 @@
+<div [style.margin.px]="10">
+  <button class="main-button">
+    <mat-icon (click)="openDialog()">delete</mat-icon>
+  </button>
+</div>
+
+<ng-template #myTemplate>
+  <div class="first">
+    <h1>Tem certeza que deseja apagar esse usuário?</h1>
+
+    <div class="button">
+      <button mat-button class="save">Deletar</button>
+      <button mat-button class="cancel">Cancelar</button>
+    </div>
+  </div>
+</ng-template>

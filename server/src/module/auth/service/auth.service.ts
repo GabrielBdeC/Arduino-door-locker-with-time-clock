@@ -5,18 +5,15 @@ import { Login } from '../model/login.model';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../model/user.model';
 import * as argon2 from 'argon2';
-import { validateOrReject } from 'class-validator';
-import { commonValidationOptions } from '../../../common/constant/common-validation-options.constant';
 
 @Injectable()
 export class AuthService {
   constructor(
     private applicationUserService: ApplicationUserService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   public async validateUser(login: Login): Promise<ApplicationUser> {
-    await validateOrReject(login, commonValidationOptions);
     return this.applicationUserService
       .getByLogin(login.login)
       .then((applicationUser: ApplicationUser) =>

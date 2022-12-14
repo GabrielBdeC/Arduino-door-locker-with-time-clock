@@ -1,6 +1,11 @@
 CREATE DATABASE IF NOT EXISTS db_arduino_locker;
 USE db_arduino_locker;
-
+CREATE TABLE IF NOT EXISTS `version_history` (
+  `version_history_id` INT PRIMARY KEY AUTO_INCREMENT,
+  'description' VARCHAR(128),
+  'file_name' VARCHAR(128) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 CREATE TABLE IF NOT EXISTS `door_locker_user` (
   `door_locker_user_id` BIGINT PRIMARY KEY AUTO_INCREMENT,
   `door_locker_user_uuid` VARCHAR(32) NOT NULL COMMENT 'Use in DTO',
@@ -15,7 +20,6 @@ CREATE TABLE IF NOT EXISTS `door_locker_user` (
   `changed_by` BIGINT,
   `deleted_by` BIGINT
 );
-
 CREATE TABLE IF NOT EXISTS `application_user` (
   `application_user_id` BIGINT PRIMARY KEY AUTO_INCREMENT,
   `application_user_uuid` VARCHAR(32) NOT NULL COMMENT 'Use in DTO',
@@ -29,21 +33,20 @@ CREATE TABLE IF NOT EXISTS `application_user` (
   `changed_by` BIGINT,
   `deleted_by` BIGINT
 );
-
 CREATE TABLE IF NOT EXISTS `health_check` (
   `health_check_id` INT PRIMARY KEY AUTO_INCREMENT
 );
-
-ALTER TABLE `door_locker_user` ADD FOREIGN KEY (`created_by`) REFERENCES `application_user` (`application_user_id`);
-
-ALTER TABLE `door_locker_user` ADD FOREIGN KEY (`changed_by`) REFERENCES `application_user` (`application_user_id`);
-
-ALTER TABLE `door_locker_user` ADD FOREIGN KEY (`deleted_by`) REFERENCES `application_user` (`application_user_id`);
-
-ALTER TABLE `application_user` ADD FOREIGN KEY (`created_by`) REFERENCES `application_user` (`application_user_id`);
-
-ALTER TABLE `application_user` ADD FOREIGN KEY (`changed_by`) REFERENCES `application_user` (`application_user_id`);
-
-ALTER TABLE `application_user` ADD FOREIGN KEY (`deleted_by`) REFERENCES `application_user` (`application_user_id`);
-
-INSERT IGNORE INTO `health_check` (`health_check_id`) VALUES (1);
+ALTER TABLE `door_locker_user`
+ADD FOREIGN KEY (`created_by`) REFERENCES `application_user` (`application_user_id`);
+ALTER TABLE `door_locker_user`
+ADD FOREIGN KEY (`changed_by`) REFERENCES `application_user` (`application_user_id`);
+ALTER TABLE `door_locker_user`
+ADD FOREIGN KEY (`deleted_by`) REFERENCES `application_user` (`application_user_id`);
+ALTER TABLE `application_user`
+ADD FOREIGN KEY (`created_by`) REFERENCES `application_user` (`application_user_id`);
+ALTER TABLE `application_user`
+ADD FOREIGN KEY (`changed_by`) REFERENCES `application_user` (`application_user_id`);
+ALTER TABLE `application_user`
+ADD FOREIGN KEY (`deleted_by`) REFERENCES `application_user` (`application_user_id`);
+INSERT IGNORE INTO `health_check` (`health_check_id`)
+VALUES (1);

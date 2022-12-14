@@ -5,12 +5,12 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { from, lastValueFrom, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AuthService } from '../service/auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   public intercept(
     req: HttpRequest<any>,

@@ -1,0 +1,39 @@
+mat-form-field {
+  padding: 5px;
+  width: stretch;
+}
+
+h1 {
+  text-align: center;
+}
+
+.main-button {
+  all: unset;
+  cursor: pointer;
+}
+
+.main-button:hover {
+  color: red;
+}
+
+.save:hover {
+  color: red;
+}
+
+.cancel {
+  margin-left: 20px;
+}
+
+.cancel:hover {
+  color: darkslategray;
+}
+
+.first {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: stretch;
+}
