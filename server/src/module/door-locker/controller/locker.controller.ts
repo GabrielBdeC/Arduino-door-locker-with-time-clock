@@ -40,10 +40,7 @@ export class LockerController {
       return this.doorLockerUserService
         .getByRfid(lockerEntity)
         .then(() => {
-          this.lockerWsService.sendMessage({
-            event: 'rfid',
-            data: 'error',
-          });
+          this.lockerWsService.sendMessage('error');
           throw new BadRequestException('Rfid already stored');
         })
         .catch(async (err) => {
@@ -51,11 +48,8 @@ export class LockerController {
             await this.cacheManager.set('rfid', lockerDto.rfid, {
               ttl: 0,
             });
-            this.lockerWsService.sendMessage({
-              event: 'rfid',
-              data: 'success',
-            });
-            return 'OK';
+            this.lockerWsService.sendMessage('success');
+            return 'STORED';
           } else {
             throw err;
           }

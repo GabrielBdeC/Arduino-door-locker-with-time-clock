@@ -6,7 +6,7 @@ import {
   WebSocketServer,
   WsResponse,
 } from '@nestjs/websockets';
-import { map, Observable } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { Server } from 'ws';
 import { LockerWsService } from '../service/locker-ws.service';
 import { LockerWsDto } from '../dto/locker-ws.dto';
@@ -35,7 +35,7 @@ export class LockerGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }),
       );
       this.lockerWsService.subjectLockerObservable.pipe(
-        map((value: LockerWsDto) => value),
+        map((value: string) => value),
       );
       await this.cacheManager.set('wsClients', this.server.clients.size, {
         ttl: 0,
@@ -44,9 +44,19 @@ export class LockerGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('rfid')
-  handleMessage(): Observable<WsResponse<string>> {
+  handleMessage(server: Server): Observable<WsResponse<string>> {
     return this.lockerWsService.subjectLockerObservable.pipe(
-      map((value: LockerWsDto) => ({ event: value.event, data: value.data })),
+      map(
+        (value: string): LockerWsDto => ({
+          event: 'rfid',
+          data: value,
+        }),
+      ),
+      tap((lockerWsDto: LockerWsDto) => {
+        if (lockerWsDto.data == 'closed') {
+          server.close();
+        }
+      }),
     );
   }
 
