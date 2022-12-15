@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS db_arduino_locker;
-USE db_arduino_locker;
+CREATE DATABASE IF NOT EXISTS locker_db;
+USE locker_db;
 CREATE TABLE IF NOT EXISTS `version_history` (
   `version_history_id` INT PRIMARY KEY AUTO_INCREMENT,
   'description' VARCHAR(128),
