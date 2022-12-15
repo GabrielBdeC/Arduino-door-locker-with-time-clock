@@ -7,9 +7,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { TableComponent } from './component/table/table.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
+import { MatSortModule } from '@angular/material/sort';
 
 
 const routes: Routes = [
@@ -26,15 +26,11 @@ const routes: Routes = [
     MatTableModule,
     MatFormFieldModule,
     MatPaginatorModule,
-    MatInputModule
-
+    MatInputModule,
+    MatSortModule
   ],
   providers: [
     DoorLockerUserService,
-    {
-      provide: MAT_DATE_LOCALE,
-      useValue: 'pt-BR'
-    },
     AuthGuard
   ]
 

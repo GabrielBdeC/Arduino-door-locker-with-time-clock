@@ -1,4 +1,4 @@
-import { Base } from 'src/app/core/model/base.model';
+import { Base, BaseResponsePaginated } from 'src/app/core/model/base.model';
 
 export class DoorLockerUser extends Base {
   public name: string;
@@ -6,3 +6,5 @@ export class DoorLockerUser extends Base {
   public rfid: string;
   public authorization: boolean;
 }
+
+export class DoorLockerUserPaginated extends BaseResponsePaginated<DoorLockerUser>{ };

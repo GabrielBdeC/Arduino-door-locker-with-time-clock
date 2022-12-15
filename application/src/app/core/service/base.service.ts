@@ -1,16 +1,23 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Base, BaseResponsePaginated } from '../model/base.model';
 
 @Injectable()
 export abstract class BaseService<T extends Base> {
-  protected url: string = 'http://localhost:3000/api/door_locker/v1';
+  protected url: string = 'http://localhost:3000/api/door_locker';
 
-  constructor(protected http: HttpClient) {}
+  constructor(protected http: HttpClient) { }
 
-  public getAll(): Observable<BaseResponsePaginated<T>> {
-    return this.http.get<BaseResponsePaginated<T>>(this.url);
+  public getAll(numberPage: number | void, pageItems: number | void): Observable<BaseResponsePaginated<T>> {
+    let params: HttpParams = new HttpParams();
+    if (numberPage) {
+      params = params.set('numberPage', numberPage);
+    }
+    if (pageItems) {
+      params = params.set('pageItems', pageItems);
+    }
+    return this.http.get<BaseResponsePaginated<T>>(this.url, { params });
   }
 
   public getOne(uuid: string): Observable<T> {
