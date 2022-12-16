@@ -30,4 +30,4 @@ import { TypeOrmConfigService } from './service/typeorm-config.service';
     },
   ],
 })
-export class CoreModule {}
+export class CoreModule { }

@@ -1,42 +1,23 @@
 <div class="table">
-  <div class="example-header">
-    <mat-form-field
-      ><input
-        matInput
-        (keyup)="applyFilter($any($event.target).value)"
-        placeholder="Filter"
-      />
-    </mat-form-field>
-  </div>
+  <br>
   <div class="example-container mat-elevation-z8">
     <mat-table [dataSource]="dataSource" matSort>
       <!-- ID Column -->
-      <ng-container matColumnDef="id">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>ID </mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{ row.id }} </mat-cell>
-      </ng-container>
-      <!-- Registry Column -->
-      <ng-container matColumnDef="progress">
-        <mat-header-cell *matHeaderCellDef mat-sort-header
-          >Matrícula
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{ row.progress }} </mat-cell>
+      <ng-container matColumnDef="institutionCode">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Matrícula</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{ row.institutionCode }} </mat-cell>
       </ng-container>
       <!-- Name Column -->
       <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef mat-sort-header
-          >Nome
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Nome
         </mat-header-cell>
         <mat-cell *matCellDef="let row"> {{ row.name }} </mat-cell>
       </ng-container>
-      <!-- Color Column (for testing's sake) -->
-      <ng-container matColumnDef="color">
-        <mat-header-cell *matHeaderCellDef mat-sort-header
-          >Color
+      <!-- Authorization Column -->
+      <ng-container matColumnDef="authorization">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Autorização
         </mat-header-cell>
-        <mat-cell *matCellDef="let row" [style.color]="row.color">
-          {{ row.color }}
-        </mat-cell>
+        <mat-cell *matCellDef="let row"> {{ row.authorization }} </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="action">
@@ -55,8 +36,11 @@
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
     </mat-table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    <mat-paginator [length]="length" [pageIndex]="metaData.currentPage" [pageSizeOptions]="[1, 5, 10, 25, 100]"
+      (page)="onPageEvent($event)"></mat-paginator>
   </div>
+  <span>{{metaData.totalItems}}</span>
+  <button (click)="feiurinha()"></button>
 </div>
 
 <!--
