@@ -1,6 +1,6 @@
 #!/bin/sh
 sleep 5
 echo "Starting migration"
-#npm run migration:run
+yarn migration:generate
 echo "Starting server"
-node dist/main.js
+node /dist/main.js

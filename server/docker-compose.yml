@@ -44,8 +44,6 @@ services:
       MARIADB_DATABASE: ${TYPEORM_DATABASE}
     networks:
       - locker_network
-    ports:
-      - ${TYPEORM_PORT}:${TYPEORM_PORT}
     volumes:
       - mariadb_data:/var/lib/mariadb
 
