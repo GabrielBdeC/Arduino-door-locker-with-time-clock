@@ -1,8 +1,12 @@
 form {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
 }
+
+
 
 .button-container {
   display: flex;
@@ -15,27 +19,20 @@ button {
   height: 50px;
 }
 
-.space {
-  padding: 12.5vh;
-}
 
-.title {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+
+
 
 mat-form-field {
   width: 250px;
 }
 
 .background {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("src/assets/img/bg.webp");
-  background-position: center;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('src/assets/img/bg.webp');
 
-  min-width: 100vw;
   min-height: 100vh;
+  min-width: 100vw;
+
 }
 
 ::ng-deep .error-snackbar {
