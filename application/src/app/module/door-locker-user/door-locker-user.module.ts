@@ -10,6 +10,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { MatSortModule } from '@angular/material/sort';
+import { DoorLockerUserModalComponent } from './component/modal/modal.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 const routes: Routes = [
@@ -18,16 +24,23 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    DoorLockerUserComponent, TableComponent
+    DoorLockerUserComponent,
+    TableComponent,
+    DoorLockerUserModalComponent
   ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
+    ReactiveFormsModule,
     MatTableModule,
     MatFormFieldModule,
     MatPaginatorModule,
     MatInputModule,
-    MatSortModule
+    MatSortModule,
+    MatIconModule,
+    MatDialogModule,
+    MatCheckboxModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     DoorLockerUserService,

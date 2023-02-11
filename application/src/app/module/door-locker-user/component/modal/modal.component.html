@@ -1,33 +1,26 @@
-<div [style.margin.px]="10">
-  <button class="main-button">
-    <mat-icon (click)="openDialog()">edit</mat-icon>
-  </button>
+<div mat-dialog-title>
+  <h2>Criar novo acesso</h2>
 </div>
 
-<ng-template #myTemplate>
-  <div class="first">
-    <div>
-      <mat-form-field appearance="fill">
-        <mat-label>Nome</mat-label>
-        <input matInput />
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Sobrenome</mat-label>
-        <input matInput />
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Matrícula</mat-label>
-        <input matInput />
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Horas registradas </mat-label>
-        <input matInput />
-      </mat-form-field>
-    </div>
+<div class="first">
+  <form [formGroup]="formGroup" mat-dialog-content>
+    <mat-form-field appearance="fill">
+      <mat-label>Nome completo</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Matrícula</mat-label>
+      <input matInput formControlName="institutionCode" />
+    </mat-form-field>
+    <mat-checkbox formControlName="authorization">Autorizado</mat-checkbox>
+  </form>
+  <button *ngIf="!didRequestedStoreRFID()" (click)="registerRFID()">Registrar RFID</button>
+  <mat-spinner *ngIf="didRequestedStoreRFID() && isWaitingRFIDResponse()"></mat-spinner>
+  <span *ngIf="didRequestedStoreRFID() && !isWaitingRFIDResponse() && !storedRFIDHasError()">OK</span>
+  <span *ngIf="didRequestedStoreRFID() && !isWaitingRFIDResponse() && storedRFIDHasError()">X</span>
 
-    <div class="button">
-      <button mat-button class="save">Salvar</button>
-      <button mat-button class="cancel">Cancelar</button>
-    </div>
+  <div>
+    <button mat-button class="save" (click)="createUser()"
+      [disabled]="!didRequestedStoreRFID() || isWaitingRFIDResponse() || storedRFIDHasError() || formGroup.invalid">Salvar</button>
+    <button mat-button class="cancel" (click)="cancelDialog()">Cancelar</button>
   </div>
-</ng-template>

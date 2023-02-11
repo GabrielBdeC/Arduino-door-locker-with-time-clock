@@ -1,6 +1,6 @@
 export class Base {
-  uuid: string;
-  createdAt: string;
+  uuid?: string;
+  createdAt?: string;
 }
 
 export class BaseResponsePaginated<T extends Base> {

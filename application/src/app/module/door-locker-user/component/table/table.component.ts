@@ -47,11 +47,6 @@ export class TableComponent implements OnInit {
     );
   }
 
-  feiurinha() {
-    console.log(this.length);
-    this.metaData.totalItems = 23;
-  }
-
   onPageEvent(ev: PageEvent) {
     //this.fetchData(ev.pageIndex + 1, ev.pageSize);
     this.length = ev.length;
