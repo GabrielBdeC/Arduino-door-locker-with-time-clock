@@ -11,13 +11,12 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   }
 
   public static dataSourceOptions(): DataSourceOptions {
-    console.log(`${__dirname}../../migration/locker_db/*.js`);
     return {
       type: 'mariadb',
       host: process.env.TYPEORM_HOST || 'localhost',
-      port: Number(process.env.TYPEORM_HOST) || 3306,
+      port: Number(process.env.TYPEORM_PORT) || 3306,
       username: process.env.TYPEORM_USERNAME || 'root',
-      password: process.env.TYPEORM_PASSWORD || 'wsl67',
+      password: process.env.TYPEORM_PASSWORD || '',
       database: process.env.TYPEORM_DATABASE || 'locker_db',
       entities: [
         `${__dirname}/../../module/*/entity/*.entity.js`,

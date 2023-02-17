@@ -66,6 +66,9 @@ export class DoorLockerUser extends CommonEntity {
     unique: true,
     nullable: false,
   })
+  @Length(8, 8, {
+    groups: [DoorLockerUserAction.CREATE, DoorLockerUserAction.UPDATE],
+  })
   @IsNumberString({ groups: [DoorLockerUserAction.CREATE] })
   public institutionCode: string;
 
