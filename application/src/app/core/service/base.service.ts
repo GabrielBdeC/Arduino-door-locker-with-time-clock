@@ -5,7 +5,7 @@ import { Base, BaseResponsePaginated } from '../model/base.model';
 
 @Injectable()
 export abstract class BaseService<T extends Base> {
-  protected url: string = 'http://localhost:3000/api/door_locker';
+  protected url: string = 'http://localhost:9228/api/door_locker';
 
   constructor(protected http: HttpClient) { }
 
