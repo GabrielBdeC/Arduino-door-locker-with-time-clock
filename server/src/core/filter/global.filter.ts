@@ -12,7 +12,7 @@ import { ErrorDtoType, ExceptionDto } from '../dto/exception.dto';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
+  constructor(private readonly httpAdapterHost: HttpAdapterHost) { }
 
   public catch(exception: unknown, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost;

@@ -21,7 +21,7 @@ export class DoorLockerUserService {
   constructor(
     @InjectRepository(DoorLockerUser)
     private doorLockerUserRepository: Repository<DoorLockerUser>,
-  ) {}
+  ) { }
 
   public async getByRfid(lockerEntity: LockerEntity): Promise<DoorLockerUser> {
     await validateOrReject(lockerEntity, commonValidationOptions);
@@ -73,7 +73,6 @@ export class DoorLockerUserService {
     doorLockerUser: DoorLockerUser,
     user: User,
   ): Promise<DoorLockerUser> {
-    delete doorLockerUser.institutionCode;
     const doorLockerUserChanger: ApplicationUser = new ApplicationUser();
     doorLockerUserChanger.id = user.id;
     doorLockerUser.changedBy = doorLockerUserChanger;

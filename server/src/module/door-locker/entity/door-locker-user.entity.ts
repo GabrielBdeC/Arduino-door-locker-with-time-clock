@@ -69,7 +69,9 @@ export class DoorLockerUser extends CommonEntity {
   @Length(8, 8, {
     groups: [DoorLockerUserAction.CREATE, DoorLockerUserAction.UPDATE],
   })
-  @IsNumberString({ groups: [DoorLockerUserAction.CREATE] })
+  @IsNumberString({
+    groups: [DoorLockerUserAction.CREATE, DoorLockerUserAction.UPDATE],
+  })
   public institutionCode: string;
 
   @Column({
@@ -122,7 +124,12 @@ export class DoorLockerUser extends CommonEntity {
   @BeforeInsert()
   @BeforeUpdate()
   public encryptRfid() {
-    this.rfid = crypto.createHash('SHA512').update(this.rfid).digest('base64');
+    if (this.rfid) {
+      this.rfid = crypto
+        .createHash('SHA512')
+        .update(this.rfid)
+        .digest('base64');
+    }
   }
 
   @BeforeInsert()
